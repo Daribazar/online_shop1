@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingBasket, ZoomIn } from "lucide-react";
+import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
 
 type Product = {
   id: number;
@@ -71,19 +73,31 @@ export default function LatestProducts() {
 
         {/* Tabs */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex bg-white rounded-lg shadow-sm overflow-x-auto">
+          <div className="inline-flex bg-white rounded-lg shadow-sm overflow-x-auto relative">
             {tabs.map((tab) => (
-              <button
+              <motion.button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 font-medium whitespace-nowrap transition ${
+                className={`px-6 py-3 font-medium whitespace-nowrap transition relative z-10 ${
                   activeTab === tab.id
-                    ? "bg-gray-900 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-100"
+                    ? "text-white"
+                    : "text-gray-700 hover:bg-gray-100"
                 }`}
+                initial={false}
+                animate={{
+                  color: activeTab === tab.id ? "#ffffff" : "#374151"
+                }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
               >
                 {tab.label}
-              </button>
+                {activeTab === tab.id && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-gray-900 rounded-lg -z-10"
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
+              </motion.button>
             ))}
           </div>
         </div>
@@ -91,9 +105,28 @@ export default function LatestProducts() {
         <hr className="mb-8" />
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {productData[activeTab as keyof typeof productData].map((product) => (
-            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden group relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+          >
+            {productData[activeTab as keyof typeof productData].map((product, index) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 25,
+                  delay: index * 0.05
+                }}
+                className="bg-white rounded-lg shadow-md overflow-hidden group relative"
+              >
               {product.ribbon && (
                 <div className={`absolute top-2 left-2 ${product.ribbonColor || "bg-red-600"} text-white text-xs px-3 py-1 rounded z-10`}>
                   {product.ribbon}
@@ -140,9 +173,10 @@ export default function LatestProducts() {
                   <p className="text-lg font-bold">${product.price}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
   );
