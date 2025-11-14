@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
 const categories = [
   { id: 1, name: "Kurtas", products: 856, image: "/assets/images/categories/01.webp" },
@@ -16,59 +18,6 @@ const categories = [
 ];
 
 export default function Category() {
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 6,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    arrows: true,
-    responsive: [
-      {
-        breakpoint: 1280,
-        settings: {
-          slidesToShow: 5,
-          slidesToScroll: 1,
-        }
-      },
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 1,
-        }
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          dots: true,
-        }
-      },
-      {
-        breakpoint: 640,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          dots: true,
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          dots: true,
-          centerMode: true,
-          centerPadding: '30px',
-        }
-      }
-    ]
-  };
-
   return (
     <section className="py-8 md:py-12 lg:py-16 bg-gray-100">
       <div className="container mx-auto px-2 sm:px-4">
@@ -77,9 +26,39 @@ export default function Category() {
           <p className="text-sm md:text-base text-gray-600 capitalize">Select your favorite categories and purchase</p>
         </div>
 
-        <Slider {...settings} className="category-slider">
+        <Swiper
+          slidesPerView={1}
+          spaceBetween={20}
+          loop={true}
+          grabCursor={true}
+          pagination={{
+            clickable: true,
+          }}
+          navigation={true}
+          speed={600}
+          breakpoints={{
+            640: {
+              slidesPerView: 2,
+              spaceBetween: 20,
+            },
+            768: {
+              slidesPerView: 3,
+              spaceBetween: 20,
+            },
+            1024: {
+              slidesPerView: 4,
+              spaceBetween: 30,
+            },
+            1280: {
+              slidesPerView: 6,
+              spaceBetween: 30,
+            },
+          }}
+          modules={[Pagination, Navigation]}
+          className="categorySwiper"
+        >
           {categories.map((category) => (
-            <div key={category.id} className="px-2 md:px-3">
+            <SwiperSlide key={category.id}>
               <Link href="/shop-grid">
                 <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
                   <div className="overflow-hidden">
@@ -97,9 +76,9 @@ export default function Category() {
                   </div>
                 </div>
               </Link>
-            </div>
+            </SwiperSlide>
           ))}
-        </Slider>
+        </Swiper>
       </div>
     </section>
   );

@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {ShoppingBasket } from "lucide-react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { ShoppingBasket } from "lucide-react";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
 const products = [
   { id: 1, name: "Product Name", price: 49, image: "/assets/images/featured-products/01.webp", rating: 5 },
@@ -19,59 +21,6 @@ const products = [
 ];
 
 export default function Padding() {
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    arrows: true,
-    responsive: [
-      {
-        breakpoint: 1280,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 1,
-        }
-      },
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-        }
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          dots: true,
-        }
-      },
-      {
-        breakpoint: 640,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          dots: true,
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          dots: true,
-          centerMode: true,
-          centerPadding: '20px',
-        }
-      }
-    ]
-  };
-
   return (
     <section className="py-8 md:py-12 lg:py-16">
       <div className="container mx-auto px-2 sm:px-4">
@@ -80,9 +29,42 @@ export default function Padding() {
           <p className="text-sm md:text-base text-gray-600 capitalize">The purpose of lorem ipsum</p>
         </div>
 
-        <Slider {...settings} className="product-slider">
+        <Swiper
+          slidesPerView={1}
+          spaceBetween={20}
+          grabCursor={true}
+          pagination={{
+            clickable: true,
+          }}
+          navigation={true}
+          autoplay={{
+            delay: 5000,
+            disableOnInteraction: false,
+          }}
+          speed={600}
+          breakpoints={{
+            640: {
+              slidesPerView: 2,
+              spaceBetween: 20,
+            },
+            768: {
+              slidesPerView: 3,
+              spaceBetween: 20,
+            },
+            1024: {
+              slidesPerView: 4,
+              spaceBetween: 30,
+            },
+            1280: {
+              slidesPerView: 5,
+              spaceBetween: 30,
+            },
+          }}
+          modules={[Pagination, Navigation, Autoplay]}
+          className="mySwiper"
+        >
           {products.map((product) => (
-            <div key={product.id} className="px-2 md:px-3">
+            <SwiperSlide key={product.id}>
               <div className="bg-white rounded-lg shadow-md overflow-hidden group">
                 <div className="relative overflow-hidden">
                   <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-2 md:py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
@@ -119,9 +101,9 @@ export default function Padding() {
                   </div>
                 </div>
               </div>
-            </div>
+            </SwiperSlide>
           ))}
-        </Slider>
+        </Swiper>
       </div>
     </section>
   );
