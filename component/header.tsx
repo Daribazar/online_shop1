@@ -18,7 +18,6 @@ const electronicsItems = [
 
 const shopMenuItems = [
   { label: "Shop Cart", href: "/cart" },
-  { label: "Wishlist", href: "/wishlist" },
   { label: "Product Details", href: "/product-details" },
   { label: "Payment Method", href: "/payment-method" },
   { label: "Billing Details", href: "/billing-details" },
@@ -224,9 +223,6 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <Link href="/search" className="hover:text-gray-300 transition">
               <Search size={22} />
-            </Link>
-            <Link href="/wishlist" className="hover:text-gray-300 transition">
-              <Heart size={22} />
             </Link>
             <button 
               onClick={() => setCartOpen(true)}

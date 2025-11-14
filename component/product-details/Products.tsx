@@ -129,10 +129,6 @@ export default function Products() {
                 <ShoppingBasket size={20} />
                 Add to Bag
               </button>
-              <button className="flex-1 border-2 border-gray-900 px-6 py-3 rounded hover:bg-gray-100 transition flex items-center justify-center gap-2">
-                <Heart size={20} />
-                Wishlist
-              </button>
             </div>
 
             <hr className="my-6" />

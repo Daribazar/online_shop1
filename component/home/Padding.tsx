@@ -74,13 +74,7 @@ export default function Padding() {
                 <div className="relative overflow-hidden">
                   <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                     <button className="p-2 hover:bg-gray-100 rounded-full transition">
-                      <Heart size={20} />
-                    </button>
-                    <button className="p-2 hover:bg-gray-100 rounded-full transition">
                       <ShoppingBasket size={20} />
-                    </button>
-                    <button className="p-2 hover:bg-gray-100 rounded-full transition">
-                      <ZoomIn size={20} />
                     </button>
                   </div>
                   <Link href="/product-details">
