@@ -71,3 +71,13 @@
 .category-slider .slick-dots li.slick-active button:before {
   color: #1f2937;
 }
+
+
+/* Lightbox Custom Styles */
+.yarl__root {
+  --yarl__color_backdrop: rgba(0, 0, 0, 0.9) !important;
+}
+
+.yarl__slide_image {
+  object-fit: contain !important;
+}
