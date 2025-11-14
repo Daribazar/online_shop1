@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Moon, Search, Heart, ShoppingBasket, User } from 'lucide-react';
+import { Menu, X, Search, Heart, ShoppingBasket, User } from 'lucide-react';
+import CartSidebar from './cart/CartSidebar';
 
 const fashionItems = [
   "Casual T-Shirts", "Formal Shirts", "Jackets", "Jeans",
@@ -59,6 +60,7 @@ export default function Header() {
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [blogDropdownOpen, setBlogDropdownOpen] = useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <header className="bg-white text-black shadow-lg">
@@ -220,21 +222,21 @@ export default function Header() {
 
           {/* Right Icons */}
           <div className="flex items-center space-x-4">
-            <button className="hover:text-gray-300 transition">
-              <Moon size={22} />
-            </button>
             <Link href="/search" className="hover:text-gray-300 transition">
               <Search size={22} />
             </Link>
             <Link href="/wishlist" className="hover:text-gray-300 transition">
               <Heart size={22} />
             </Link>
-            <Link href="/cart" className="relative hover:text-gray-300 transition">
+            <button 
+              onClick={() => setCartOpen(true)}
+              className="relative hover:text-gray-300 transition"
+            >
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 8
               </span>
               <ShoppingBasket size={22} />
-            </Link>
+            </button>
             <Link href="/account" className="hover:text-gray-300 transition">
               <User size={22} />
             </Link>
@@ -260,6 +262,8 @@ export default function Header() {
           </div>
         )}
       </nav>
+      
+      <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </header>
   );
 }
