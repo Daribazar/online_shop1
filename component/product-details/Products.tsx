@@ -65,6 +65,8 @@ export default function Products() {
               close={() => setLightboxOpen(false)}
               slides={slides}
               index={lightboxIndex}
+              carousel={{ finite: false }}
+              controller={{ closeOnBackdropClick: true }}
             />
           </div>
 
