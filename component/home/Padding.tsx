@@ -27,6 +27,7 @@ export default function Padding() {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
+    arrows: false,
     responsive: [
       {
         breakpoint: 1280,
@@ -47,6 +48,15 @@ export default function Padding() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          dots: true,
+        }
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          dots: true,
         }
       },
       {
@@ -54,27 +64,30 @@ export default function Padding() {
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          dots: true,
+          centerMode: true,
+          centerPadding: '20px',
         }
       }
     ]
   };
 
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-4">
-        <div className="text-center pb-8">
-          <h3 className="text-3xl font-bold mb-2">Featured Products</h3>
-          <p className="text-gray-600 capitalize">The purpose of lorem ipsum</p>
+    <section className="py-8 md:py-12 lg:py-16">
+      <div className="container mx-auto px-2 sm:px-4">
+        <div className="text-center pb-6 md:pb-8">
+          <h3 className="text-2xl md:text-3xl font-bold mb-2">Featured Products</h3>
+          <p className="text-sm md:text-base text-gray-600 capitalize">The purpose of lorem ipsum</p>
         </div>
 
         <Slider {...settings} className="product-slider">
           {products.map((product) => (
-            <div key={product.id} className="px-3">
+            <div key={product.id} className="px-2 md:px-3">
               <div className="bg-white rounded-lg shadow-md overflow-hidden group">
                 <div className="relative overflow-hidden">
-                  <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-2 md:py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                     <button className="p-2 hover:bg-gray-100 rounded-full transition">
-                      <ShoppingBasket size={20} />
+                      <ShoppingBasket size={18} className="md:w-5 md:h-5" />
                     </button>
                   </div>
                   <Link href="/product-details">
@@ -88,21 +101,21 @@ export default function Padding() {
                   </Link>
                 </div>
 
-                <div className="p-4">
+                <div className="p-3 md:p-4">
                   <div className="text-center">
-                    <h6 className="font-bold mb-2">{product.name}</h6>
-                    <div className="flex justify-center gap-1 mb-2 text-yellow-500">
+                    <h6 className="font-bold text-sm md:text-base mb-1 md:mb-2">{product.name}</h6>
+                    <div className="flex justify-center gap-1 mb-1 md:mb-2 text-yellow-500">
                       {[...Array(product.rating)].map((_, i) => (
                         <svg
                           key={i}
-                          className="w-4 h-4 fill-current"
+                          className="w-3 h-3 md:w-4 md:h-4 fill-current"
                           viewBox="0 0 20 20"
                         >
                           <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                         </svg>
                       ))}
                     </div>
-                    <p className="text-lg font-bold">${product.price}</p>
+                    <p className="text-base md:text-lg font-bold">${product.price}</p>
                   </div>
                 </div>
               </div>

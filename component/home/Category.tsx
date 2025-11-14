@@ -24,6 +24,7 @@ export default function Category() {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
+    arrows: false,
     responsive: [
       {
         breakpoint: 1280,
@@ -44,6 +45,7 @@ export default function Category() {
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
+          dots: true,
         }
       },
       {
@@ -51,6 +53,7 @@ export default function Category() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          dots: true,
         }
       },
       {
@@ -58,22 +61,25 @@ export default function Category() {
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          dots: true,
+          centerMode: true,
+          centerPadding: '30px',
         }
       }
     ]
   };
 
   return (
-    <section className="py-16 bg-gray-100">
-      <div className="container mx-auto px-4">
-        <div className="text-center pb-8">
-          <h3 className="text-3xl font-bold mb-2">Top Categories</h3>
-          <p className="text-gray-600 capitalize">Select your favorite categories and purchase</p>
+    <section className="py-8 md:py-12 lg:py-16 bg-gray-100">
+      <div className="container mx-auto px-2 sm:px-4">
+        <div className="text-center pb-6 md:pb-8">
+          <h3 className="text-2xl md:text-3xl font-bold mb-2">Top Categories</h3>
+          <p className="text-sm md:text-base text-gray-600 capitalize">Select your favorite categories and purchase</p>
         </div>
 
         <Slider {...settings} className="category-slider">
           {categories.map((category) => (
-            <div key={category.id} className="px-3">
+            <div key={category.id} className="px-2 md:px-3">
               <Link href="/shop-grid">
                 <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
                   <div className="overflow-hidden">
@@ -85,9 +91,9 @@ export default function Category() {
                       className="w-full h-auto object-cover hover:scale-110 transition-transform duration-300"
                     />
                   </div>
-                  <div className="text-center p-4">
-                    <h5 className="font-bold text-lg mb-1">{category.name}</h5>
-                    <h6 className="text-gray-600 font-semibold">{category.products} Products</h6>
+                  <div className="text-center p-3 md:p-4">
+                    <h5 className="font-bold text-base md:text-lg mb-1">{category.name}</h5>
+                    <h6 className="text-sm md:text-base text-gray-600 font-semibold">{category.products} Products</h6>
                   </div>
                 </div>
               </Link>
