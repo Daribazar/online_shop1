@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Search, Heart, ShoppingBasket, User } from 'lucide-react';
+import { Menu, X, Search, ShoppingBasket, User } from 'lucide-react';
 import CartSidebar from './cart/CartSidebar';
 
 const fashionItems = [
