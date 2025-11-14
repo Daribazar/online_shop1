@@ -27,7 +27,7 @@ export default function Padding() {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
-    arrows: false,
+    arrows: true,
     responsive: [
       {
         breakpoint: 1280,

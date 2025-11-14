@@ -24,7 +24,7 @@ export default function Category() {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
-    arrows: false,
+    arrows: true,
     responsive: [
       {
         breakpoint: 1280,
