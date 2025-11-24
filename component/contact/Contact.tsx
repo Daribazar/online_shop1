@@ -42,15 +42,17 @@ export const Contact = () => {
           message: "Failed to send message. Please try again.",
         });
       }
-    } catch (error) {
-      setSubmitStatus({
-        type: "error",
-        message: "An error occurred. Please try again later.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    } catch {
+        setSubmitStatus({
+          type: "error",
+          message: "An error occurred. Please try again later.",
+        });
+      }
+
+      finally {
+          setIsSubmitting(false);
+        }
+      };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
