@@ -1,5 +1,7 @@
+// Backend API-ийн үндсэн хаяг
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1';
 
+// Бүх категориудыг татаж авах
 export async function fetchCategories() {
   try {
     const response = await fetch(`${API_URL}/categories`);
@@ -12,6 +14,7 @@ export async function fetchCategories() {
   }
 }
 
+// Бүх бүтээгдэхүүнүүдийг татаж авах
 export async function fetchProducts() {
   try {
     const response = await fetch(`${API_URL}/products`);
@@ -24,12 +27,14 @@ export async function fetchProducts() {
   }
 }
 
+// ID-аар бүтээгдэхүүний дэлгэрэнгүй мэдээлэл татаж авах
 export async function fetchProductById(id: string) {
   try {
     const response = await fetch(`${API_URL}/products/${id}`);
     if (!response.ok) throw new Error('Failed to fetch product');
     const data = await response.json();
-    return data.product || null;
+    console.log('Product API response:', data);
+    return data.product || data.getSpecificProduct || data || null;
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;

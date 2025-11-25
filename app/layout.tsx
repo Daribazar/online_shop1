@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "../component/header";
 import Footer from "../component/footer";
+import { WishlistProvider } from "@/lib/wishlistContext";
+import NextTopLoader from 'nextjs-toploader';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +30,22 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        {children}
-        <Footer />
+        <NextTopLoader
+          color="#ef4444"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #ef4444,0 0 5px #ef4444"
+        />
+        <WishlistProvider>
+          <Header />
+          {children}
+          <Footer />
+        </WishlistProvider>
       </body>
     </html>
   );

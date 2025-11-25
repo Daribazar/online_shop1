@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+// Ижил төстэй бүтээгдэхүүнүүд (одоогоор static өгөгдөл)
 const similarProducts = [
   { id: 1, name: "Syndrona", description: "Color Printed Kurta", price: 458, oldPrice: 2089, discount: 70, image: "/assets/images/best-sellar/03.webp" },
   { id: 2, name: "Syndrona", description: "Color Printed Kurta", price: 458, oldPrice: 2089, discount: 70, image: "/assets/images/new-arrival/02.webp" },
@@ -13,18 +14,19 @@ const similarProducts = [
   { id: 9, name: "Syndrona", description: "Color Printed Kurta", price: 458, oldPrice: 2089, discount: 70, image: "/assets/images/trending-product/01.webp" },
 ];
 
+// Ижил төстэй бүтээгдэхүүнүүд харуулах компонент
 export default function Similar() {
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
-        {/* Section Title */}
+        {/* Хэсгийн гарчиг */}
         <div className="flex items-center gap-4 pb-8">
           <div className="flex-1 h-px bg-gray-300" />
           <h3 className="text-3xl font-bold">Similar Products</h3>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
 
-        {/* Products Grid */}
+        {/* Бүтээгдэхүүний grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {similarProducts.map((product) => (
             <Link key={product.id} href="/product-details">

@@ -1,37 +1,110 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import {ShoppingBasket } from "lucide-react";
+import { Heart } from "lucide-react";
+import { useWishlist } from "@/lib/wishlistContext";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import { fetchProductById } from "@/lib/api";
 
-const productImages = [
-  "/assets/images/product-images/01.jpg",
-  "/assets/images/product-images/02.jpg",
-  "/assets/images/product-images/03.jpg",
-  "/assets/images/product-images/04.jpg",
-  "/assets/images/product-images/05.jpg",
-  "/assets/images/product-images/06.jpg",
-  "/assets/images/product-images/07.jpg",
-  "/assets/images/product-images/08.jpg",
-];
-
-const moreColors = [
-  "/assets/images/featured-products/01.webp",
-  "/assets/images/featured-products/02.webp",
-  "/assets/images/featured-products/03.webp",
-  "/assets/images/featured-products/04.webp",
-];
-
+// Хувцасны хэмжээнүүд
 const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
+// Category төрөл
+type Category = {
+  _id: string;
+  name: string;
+};
+
+// Brand төрөл
+type Brand = {
+  _id: string;
+  name: string;
+};
+
+// Бүтээгдэхүүний төрөл
+type Product = {
+  _id: string;
+  title: string;
+  descripton: string;
+  price: number;
+  priceAfterDiscount?: number;
+  quantity?: number;
+  imgCover?: string;
+  images?: string[];
+  category?: Category | string;
+  subcategory?: Category | string;
+  brand?: Brand | string;
+};
+
+// Бүтээгдэхүүний дэлгэрэнгүй хуудас - Зураг, мэдээлэл, wishlist
 export default function Products() {
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const searchParams = useSearchParams();
+  const productId = searchParams.get('id');
+  
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState("");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
+  useEffect(() => {
+    async function loadProduct() {
+      if (!productId) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const data = await fetchProductById(productId);
+        setProduct(data);
+      } catch (error) {
+        console.error("Error loading product:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadProduct();
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-20">Loading product...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!product) {
+    return (
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-20">Product not found</div>
+        </div>
+      </section>
+    );
+  }
+
+  const productImages = [
+    ...(product.imgCover && !product.imgCover.includes('undefined') ? [product.imgCover] : []),
+    ...(product.images?.filter(img => !img.includes('undefined')) || []),
+  ].slice(0, 8);
+
   const slides = productImages.map((img) => ({ src: img }));
+  
+  // Хямдралын хувийг тооцоолох
+  const calculateDiscount = () => {
+    if (!product.priceAfterDiscount) return 0;
+    return Math.round(((product.price - product.priceAfterDiscount) / product.price) * 100);
+  };
+  
+  const discount = calculateDiscount();
 
   return (
     <section className="py-8">
@@ -43,7 +116,7 @@ export default function Products() {
               {productImages.map((img, index) => (
                 <div 
                   key={index} 
-                  className="overflow-hidden rounded-lg cursor-pointer hover:opacity-80 transition"
+                  className="relative w-full h-80 md:h-96 overflow-hidden rounded-lg cursor-pointer hover:opacity-80 transition"
                   onClick={() => {
                     setLightboxIndex(index);
                     setLightboxOpen(true);
@@ -51,10 +124,9 @@ export default function Products() {
                 >
                   <Image
                     src={img}
-                    width={400}
-                    height={400}
+                    fill
                     alt={`Product image ${index + 1}`}
-                    className="w-full h-auto object-cover"
+                    className="object-cover"
                   />
                 </div>
               ))}
@@ -72,36 +144,30 @@ export default function Products() {
 
           {/* Product Info */}
           <div className="xl:col-span-5">
-            <h4 className="text-2xl font-bold mb-2">Check Pink Kurta</h4>
-            <p className="text-gray-600 mb-4">Women Pink &amp; Off-White Printed Kurta with Palazzos</p>
+            <h4 className="text-2xl font-bold mb-2">{product.title}</h4>
+            <p className="text-gray-600 mb-4">{product.descripton}</p>
 
             <hr className="my-4" />
 
             {/* Price */}
             <div className="flex items-center gap-4 mb-2">
-              <span className="text-3xl font-bold">$458</span>
-              <span className="text-xl text-gray-400 line-through">$2089</span>
-              <span className="text-2xl font-bold text-red-600">(70% off)</span>
+              <span className="text-3xl font-bold">
+                ${product.priceAfterDiscount || product.price}
+              </span>
+              {product.priceAfterDiscount && (
+                <>
+                  <span className="text-xl text-gray-400 line-through">${product.price}</span>
+                  <span className="text-2xl font-bold text-red-600">({discount}% off)</span>
+                </>
+              )}
             </div>
             <p className="text-green-600 font-semibold mb-4">inclusive of all taxes</p>
-
-            {/* More Colors */}
-            <div className="mt-6">
-              <h6 className="font-bold mb-3">More Colors</h6>
-              <div className="flex gap-3">
-                {moreColors.map((color, index) => (
-                  <div key={index} className="cursor-pointer hover:opacity-75 transition">
-                    <Image
-                      src={color}
-                      width={65}
-                      height={65}
-                      alt={`Color option ${index + 1}`}
-                      className="rounded"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+            
+            {product.quantity !== undefined && (
+              <p className="text-gray-600 mb-4">
+                {product.quantity > 0 ? `In Stock: ${product.quantity} items` : 'Out of Stock'}
+              </p>
+            )}
 
             {/* Size Chart */}
             <div className="mt-6">
@@ -123,11 +189,28 @@ export default function Products() {
               </div>
             </div>
 
-            {/* Cart Buttons */}
-            <div className="mt-6 flex flex-col lg:flex-row gap-3">
-              <button className="flex-1 bg-gray-900 text-white px-6 py-3 rounded hover:bg-gray-800 transition flex items-center justify-center gap-2">
-                <ShoppingBasket size={20} />
-                Add to Bag
+            {/* Wishlist Button */}
+            <div className="mt-6">
+              <button 
+                onClick={() => {
+                  if (!product) return;
+                  if (isInWishlist(product._id)) {
+                    removeFromWishlist(product._id);
+                  } else {
+                    addToWishlist(product);
+                  }
+                }}
+                className={`w-full px-6 py-3 rounded-lg transition flex items-center justify-center gap-2 font-semibold ${
+                  product && isInWishlist(product._id)
+                    ? 'bg-red-500 text-white hover:bg-red-600'
+                    : 'bg-gray-900 text-white hover:bg-gray-800'
+                }`}
+              >
+                <Heart 
+                  size={20} 
+                  className={product && isInWishlist(product._id) ? 'fill-white' : ''} 
+                />
+                {product && isInWishlist(product._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
               </button>
             </div>
 
@@ -136,12 +219,21 @@ export default function Products() {
             {/* Product Details */}
             <div>
               <h6 className="font-bold mb-3">Product Details</h6>
-              <ul className="space-y-2 text-gray-600">
-                <li>There are many variations of passages of Lorem Ipsum</li>
-                <li>All the Lorem Ipsum generators on the Internet tend to repeat</li>
-                <li>Contrary to popular belief, Lorem Ipsum is not simply random text</li>
-                <li>The standard chunk of Lorem Ipsum used since the 1500s is reproduced below</li>
-              </ul>
+              <div className="space-y-2 text-gray-600">
+                <p>{product.descripton}</p>
+                {product.category && (
+                  <p>
+                    <span className="font-semibold">Category:</span>{' '}
+                    {typeof product.category === 'string' ? product.category : product.category.name}
+                  </p>
+                )}
+                {product.brand && (
+                  <p>
+                    <span className="font-semibold">Brand:</span>{' '}
+                    {typeof product.brand === 'string' ? product.brand : product.brand.name}
+                  </p>
+                )}
+              </div>
             </div>
 
             <hr className="my-6" />

@@ -1,3 +1,4 @@
+// Байршлын газрын зураг - Google Maps ашиглана
 export default function Maps() {
   return (
     <section className="py-16 bg-gray-50">
