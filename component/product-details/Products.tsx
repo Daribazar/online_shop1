@@ -39,8 +39,12 @@ type Product = {
   brand?: Brand | string;
 };
 
+type ProductsProps = {
+  onCategoryLoad?: (categoryId: string) => void;
+};
+
 // Бүтээгдэхүүний дэлгэрэнгүй хуудас - Зураг, мэдээлэл, wishlist
-export default function Products() {
+export default function Products({ onCategoryLoad }: ProductsProps) {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');
@@ -61,6 +65,12 @@ export default function Products() {
       try {
         const data = await fetchProductById(productId);
         setProduct(data);
+        
+        // Category ID-г parent компонент руу дамжуулах
+        if (data?.category) {
+          const catId = typeof data.category === 'string' ? data.category : data.category._id;
+          onCategoryLoad?.(catId);
+        }
       } catch (error) {
         console.error("Error loading product:", error);
       } finally {
@@ -69,7 +79,7 @@ export default function Products() {
     }
     
     loadProduct();
-  }, [productId]);
+  }, [onCategoryLoad, productId]);
 
   if (loading) {
     return (
@@ -224,13 +234,17 @@ export default function Products() {
                 {product.category && (
                   <p>
                     <span className="font-semibold">Category:</span>{' '}
-                    {typeof product.category === 'string' ? product.category : product.category.name}
+                    <span className="font-bold text-gray-900">
+                      {typeof product.category === 'string' ? product.category : product.category.name}
+                    </span>
                   </p>
                 )}
                 {product.brand && (
                   <p>
                     <span className="font-semibold">Brand:</span>{' '}
-                    {typeof product.brand === 'string' ? product.brand : product.brand.name}
+                    <span className="font-bold text-gray-900">
+                      {typeof product.brand === 'string' ? product.brand : product.brand.name}
+                    </span>
                   </p>
                 )}
               </div>

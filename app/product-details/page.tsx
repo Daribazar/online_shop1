@@ -1,11 +1,5 @@
-import Products from "@/component/product-details/Products";
-import Similar from "@/component/product-details/Similar";
+import ProductDetailsPage from "@/component/product-details/ProductDetailsPage";
 
 export default function ProductDetails() {
-  return (
-    <>
-      <Products />
-      <Similar />
-    </>
-  );
+  return <ProductDetailsPage />;
 }

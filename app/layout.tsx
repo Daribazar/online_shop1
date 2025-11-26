@@ -43,7 +43,9 @@ export default function RootLayout({
         />
         <WishlistProvider>
           <Header />
-          {children}
+          <main className="pt-20">
+            {children}
+          </main>
           <Footer />
         </WishlistProvider>
       </body>

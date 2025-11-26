@@ -7,22 +7,27 @@ import { Menu, X, Search, Heart } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import WishlistSidebar from './wishlist/WishlistSidebar';
 import SearchSidebar from './search/SearchSidebar';
+import { useScrollDirection } from '@/lib/useScrollDirection';
 
 const mobileMenuItems = [
   { label: "Home", href: "/" },
   { label: "Products", href: "/products" },
   { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-  { label: "Account", href: "/account" }
+  { label: "Contact", href: "/contact" }
 ];
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const scrollDirection = useScrollDirection();
 
   return (
-    <header className="bg-white text-black shadow-lg relative">
+    <header 
+      className={`bg-white text-black shadow-lg fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${
+        scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'
+      }`}
+    >
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
