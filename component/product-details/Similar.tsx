@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { API_URL } from "@/lib/api";
 
 type Product = {
   _id: string;
   title: string;
-  descripton: string;
+  description: string;
   price: number;
   priceAfterDiscount?: number;
   imgCover?: string;
@@ -32,9 +33,6 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
       }
 
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== 'undefined'
-          ? process.env.NEXT_PUBLIC_API_URL 
-          : 'http://localhost:5001/api/v1';
         const response = await fetch(`${API_URL}/products`);
         
         if (!response.ok) throw new Error('Failed to fetch products');
@@ -71,9 +69,17 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
 
   if (loading) {
     return (
-      <section className="py-16">
+      <section className="py-16" aria-live="polite" aria-busy="true">
         <div className="container mx-auto px-4">
-          <div className="text-center">Loading similar products...</div>
+          <div className="text-center">
+            <div className="inline-flex flex-col items-center gap-3">
+              <svg className="animate-spin h-12 w-12 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p className="text-gray-600 font-medium">Loading similar products...</p>
+            </div>
+          </div>
         </div>
       </section>
     );
@@ -83,13 +89,13 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
     return null;
   }
   return (
-    <section className="py-16">
+    <section className="py-16" aria-label="Ижил төстэй бүтээгдэхүүнүүд">
       <div className="container mx-auto px-4">
         {/* Хэсгийн гарчиг */}
         <div className="flex items-center gap-4 pb-8">
-          <div className="flex-1 h-px bg-gray-300" />
+          <div className="flex-1 h-px bg-gray-300" aria-hidden="true" />
           <h3 className="text-3xl font-bold">Similar Products</h3>
-          <div className="flex-1 h-px bg-gray-300" />
+          <div className="flex-1 h-px bg-gray-300" aria-hidden="true" />
         </div>
 
         {/* Бүтээгдэхүүний grid */}
@@ -99,27 +105,32 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
             const displayPrice = product.priceAfterDiscount || product.price;
             
             return (
-              <Link key={product._id} href={`/product-details?id=${product._id}`}>
-                <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow">
+              <Link 
+                key={product._id} 
+                href={`/product-details?id=${product._id}`}
+                aria-label={`${product.title} бүтээгдэхүүний дэлгэрэнгүй үзэх`}
+                className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg block"
+              >
+                <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                   {product.imgCover && !product.imgCover.includes('undefined') && (
                     <div className="relative w-full h-80 overflow-hidden">
                       <Image
                         src={product.imgCover}
                         fill
-                        alt={product.title}
-                        className="object-cover"
+                        alt={`${product.title} - Ижил төстэй бүтээгдэхүүн`}
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                   )}
                   <div className="p-4 border-t">
                     <h5 className="font-bold mb-1 truncate">{product.title}</h5>
-                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.descripton}</p>
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.description}</p>
+                    <div className="flex items-center gap-2 flex-wrap" aria-label={product.priceAfterDiscount ? `Хөнгөлөлттэй үнэ ${displayPrice} доллар, ${discount}% хөнгөлөлт` : `Үнэ ${displayPrice} доллар`}>
                       <span className="text-lg font-bold">${displayPrice}</span>
                       {product.priceAfterDiscount && (
                         <>
-                          <span className="text-sm text-gray-400 line-through">${product.price}</span>
-                          <span className="text-sm font-bold text-red-600">({discount}% off)</span>
+                          <span className="text-sm text-gray-400 line-through" aria-hidden="true">${product.price}</span>
+                          <span className="text-sm font-bold text-red-600" aria-hidden="true">({discount}% off)</span>
                         </>
                       )}
                     </div>

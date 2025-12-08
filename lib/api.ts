@@ -10,6 +10,9 @@ const getApiUrl = () => {
 
 const API_URL = getApiUrl();
 
+// API_URL-г export хийх (бусад компонентод ашиглахын тулд)
+export { API_URL };
+
 // Бүх категориудыг татаж авах
 export async function fetchCategories() {
   try {

@@ -7,6 +7,7 @@ import { Heart } from "lucide-react";
 import { useWishlist } from "@/lib/wishlistContext";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
+import { API_URL } from "@/lib/api";
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -40,7 +41,6 @@ export default function Padding() {
   useEffect(() => {
     async function loadFeaturedProducts() {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1';
         const response = await fetch(`${API_URL}/products`);
         const data = await response.json();
         // Filter only featured products
@@ -67,9 +67,17 @@ export default function Padding() {
   };
   if (loading) {
     return (
-      <section className="py-8 md:py-12 lg:py-16">
+      <section className="py-8 md:py-12 lg:py-16" aria-live="polite" aria-busy="true">
         <div className="container mx-auto px-2 sm:px-4">
-          <div className="text-center">Loading featured products...</div>
+          <div className="text-center">
+            <div className="inline-flex flex-col items-center gap-3">
+              <svg className="animate-spin h-12 w-12 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p className="text-gray-600 font-medium">Loading featured products...</p>
+            </div>
+          </div>
         </div>
       </section>
     );
@@ -80,7 +88,7 @@ export default function Padding() {
   }
 
   return (
-    <section className="py-8 md:py-12 lg:py-16">
+    <section className="py-8 md:py-12 lg:py-16" aria-label="Онцгой бүтээгдэхүүнүүд">
       <div className="container mx-auto px-2 sm:px-4">
         <div className="text-center pb-6 md:pb-8">
           <h3 className="text-2xl md:text-3xl font-bold mb-2">Featured Products</h3>
@@ -123,8 +131,12 @@ export default function Padding() {
         >
           {products.map((product, index) => (
             <SwiperSlide key={product._id}>
-              <Link href={`/product-details?id=${product._id}`} className="block">
-                <div className="bg-white rounded-lg shadow-md overflow-hidden group">
+              <Link 
+                href={`/product-details?id=${product._id}`} 
+                className="block focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg"
+                aria-label={`${product.title} бүтээгдэхүүний дэлгэрэнгүй`}
+              >
+                <div className="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                   <div className="relative w-full h-80 overflow-hidden">
                     <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-2 md:py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <button 
@@ -137,19 +149,21 @@ export default function Padding() {
                             addToWishlist(product);
                           }
                         }}
-                        className="p-2 hover:bg-red-100 rounded-full transition"
+                        aria-label={isInWishlist(product._id) ? `${product.title}-г wishlist-ээс хасах` : `${product.title}-г wishlist-д нэмэх`}
+                        className="p-2 hover:bg-red-100 rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                       >
                         <Heart 
                           size={18} 
-                          className={`md:w-5 md:h-5 transition ${isInWishlist(product._id) ? 'fill-red-500 text-red-500' : 'hover:fill-red-500 hover:text-red-500'}`} 
+                          aria-hidden="true"
+                          className={`md:w-5 md:h-5 transition-all duration-200 ${isInWishlist(product._id) ? 'fill-red-500 text-red-500' : 'hover:fill-red-500 hover:text-red-500'}`} 
                         />
                       </button>
                     </div>
                     <Image
                       src={getImageSrc(product.imgCover, product.images, index)}
                       fill
-                      alt={product.title}
-                      className="object-cover pointer-events-none"
+                      alt={`${product.title} - Онцгой бүтээгдэхүүн`}
+                      className="object-cover pointer-events-none group-hover:scale-105 transition-transform duration-300"
                       draggable={false}
                     />
                   </div>
@@ -157,21 +171,22 @@ export default function Padding() {
                   <div className="p-3 md:p-4">
                     <div className="text-center">
                       <h6 className="font-bold text-sm md:text-base mb-1 md:mb-2">{product.title}</h6>
-                      <div className="flex justify-center gap-1 mb-1 md:mb-2 text-yellow-500">
+                      <div className="flex justify-center gap-1 mb-1 md:mb-2 text-yellow-500" role="img" aria-label={`${Math.round(product.ratingsAverage || 5)} оноо 5-аас`}>
                         {[...Array(Math.round(product.ratingsAverage || 5))].map((_, i) => (
                           <svg
                             key={i}
                             className="w-3 h-3 md:w-4 md:h-4 fill-current"
                             viewBox="0 0 20 20"
+                            aria-hidden="true"
                           >
                             <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                           </svg>
                         ))}
                       </div>
-                      <p className="text-base md:text-lg font-bold">
+                      <p className="text-base md:text-lg font-bold" aria-label={product.priceAfterDiscount ? `Хөнгөлөлттэй үнэ ${product.priceAfterDiscount} доллар, анхны үнэ ${product.price} доллар` : `Үнэ ${product.price} доллар`}>
                         {product.priceAfterDiscount ? (
                           <>
-                            <span className="line-through text-gray-400 mr-2">${product.price}</span>
+                            <span className="line-through text-gray-400 mr-2" aria-hidden="true">${product.price}</span>
                             <span className="text-red-600">${product.priceAfterDiscount}</span>
                           </>
                         ) : (

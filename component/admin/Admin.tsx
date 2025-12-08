@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Upload, X, LogOut } from "lucide-react";
+import { API_URL } from "@/lib/api";
 
 // Tab төрөл - category эсвэл product
 type TabType = "category" | "product";
@@ -21,7 +22,7 @@ interface Category {
 interface Product {
   _id: string;
   title: string;
-  descripton: string;
+  description: string;
   price: number;
   priceAfterDiscount?: number;
   quantity?: number;
@@ -34,11 +35,6 @@ interface Product {
   createdAt?: string;
   updatedAt?: string;
 }
-
-// Backend API хаяг
-const API_URL = process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== 'undefined'
-  ? process.env.NEXT_PUBLIC_API_URL 
-  : 'http://localhost:5001/api/v1';
 
 // Админ хуудас - Category болон бүтээгдэхүүн удирдах
 export const Admin = () => {
@@ -81,9 +77,10 @@ export const Admin = () => {
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            aria-label="Системээс гарах"
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
-            <LogOut size={20} />
+            <LogOut size={20} aria-hidden="true" />
             Гарах
           </button>
         </div>
@@ -95,20 +92,24 @@ export const Admin = () => {
               <div className="space-y-2">
                 <button
                   onClick={() => setActiveTab("category")}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition ${
+                  aria-label="Category оруулах хуудас руу шилжих"
+                  aria-current={activeTab === "category" ? "page" : undefined}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                     activeTab === "category"
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 hover:bg-gray-200"
+                      ? "bg-blue-600 text-white shadow-md"
+                      : "bg-gray-100 hover:bg-gray-200 hover:shadow-sm"
                   }`}
                 >
                   1. Category оруулах
                 </button>
                 <button
                   onClick={() => setActiveTab("product")}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition ${
+                  aria-label="Бүтээгдэхүүн оруулах хуудас руу шилжих"
+                  aria-current={activeTab === "product" ? "page" : undefined}
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                     activeTab === "product"
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 hover:bg-gray-200"
+                      ? "bg-blue-600 text-white shadow-md"
+                      : "bg-gray-100 hover:bg-gray-200 hover:shadow-sm"
                   }`}
                 >
                   2. Бүтээгдэхүүн оруулах
@@ -178,7 +179,8 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              aria-label="Админы и-мэйл хаяг"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
               placeholder="admin@example.com"
               required
             />
@@ -190,7 +192,8 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              aria-label="Админы нууц үг"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
               placeholder="••••••••"
               required
             />
@@ -199,9 +202,20 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
+            aria-label={loading ? "Нэвтэрч байна" : "Нэвтрэх товч"}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 transition-all duration-200 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            {loading ? "Нэвтэрч байна..." : "Нэвтрэх"}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Нэвтэрч байна...
+              </span>
+            ) : (
+              "Нэвтрэх"
+            )}
           </button>
         </form>
       </div>
@@ -261,12 +275,6 @@ function CategoryForm({ token }: { token: string }) {
       formData.append("name", name);
       if (image) {
         formData.append("Image", image);
-        console.log("Image file:", image);
-      }
-
-      console.log("FormData entries:");
-      for (const pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
       }
 
       const response = await fetch(`${API_URL}/categories`, {
@@ -274,8 +282,6 @@ function CategoryForm({ token }: { token: string }) {
         headers: { token },
         body: formData,
       });
-
-      console.log("Response status:", response.status);
 
       if (response.ok) {
         alert("Category амжилттай нэмэгдлээ!");
@@ -330,7 +336,8 @@ function CategoryForm({ token }: { token: string }) {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-label="Category нэр"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none transition-all duration-200"
               placeholder="Жишээ: Electronics"
               required
             />
@@ -340,14 +347,15 @@ function CategoryForm({ token }: { token: string }) {
             <label className="block text-sm font-medium mb-2">Зураг</label>
             
             {!imagePreview ? (
-              <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                <Upload className="w-12 h-12 text-gray-400 mb-2" />
+              <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-all duration-200 hover:border-blue-400">
+                <Upload className="w-12 h-12 text-gray-400 mb-2" aria-hidden="true" />
                 <span className="text-sm text-gray-500">Зураг сонгох</span>
                 <input
                   type="file"
                   className="hidden"
                   accept="image/*"
                   onChange={handleImageChange}
+                  aria-label="Category зураг сонгох"
                 />
               </label>
             ) : (
@@ -361,9 +369,10 @@ function CategoryForm({ token }: { token: string }) {
                 <button
                   type="button"
                   onClick={removeImage}
-                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                  aria-label="Зургийг устгах"
+                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 >
-                  <X size={20} />
+                  <X size={20} aria-hidden="true" />
                 </button>
               </div>
             )}
@@ -372,9 +381,20 @@ function CategoryForm({ token }: { token: string }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            aria-label={loading ? "Уншиж байна" : "Category нэмэх товч"}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            {loading ? "Уншиж байна..." : "Category нэмэх"}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Уншиж байна...
+              </span>
+            ) : (
+              "Category нэмэх"
+            )}
           </button>
         </form>
       </div>
@@ -383,13 +403,21 @@ function CategoryForm({ token }: { token: string }) {
         <h2 className="text-2xl font-bold mb-6">Бүх Categories</h2>
         
         {loadingList ? (
-          <div className="text-center py-8">Ачааллаж байна...</div>
+          <div className="text-center py-8">
+            <div className="inline-flex flex-col items-center gap-3">
+              <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p className="text-gray-600 font-medium">Ачааллаж байна...</p>
+            </div>
+          </div>
         ) : categories.length === 0 ? (
           <div className="text-center py-8 text-gray-500">Category байхгүй байна</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {categories.map((cat) => (
-              <div key={cat._id} className="border rounded-lg p-4 hover:shadow-lg transition">
+              <div key={cat._id} className="border rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 {cat.Image && !cat.Image.includes('undefined') && (
                   <div className="relative h-32 mb-3">
                     <Image
@@ -404,7 +432,8 @@ function CategoryForm({ token }: { token: string }) {
                 <p className="text-sm text-gray-500 mb-3">ID: {cat._id}</p>
                 <button
                   onClick={() => handleDelete(cat._id)}
-                  className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700"
+                  aria-label={`${cat.name} category-г устгах`}
+                  className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 >
                   Устгах
                 </button>
@@ -421,7 +450,7 @@ function CategoryForm({ token }: { token: string }) {
 function ProductForm({ token }: { token: string }) {
   const [formData, setFormData] = useState({
     title: "",
-    descripton: "",
+    description: "",
     price: "",
     priceAfterDiscount: "",
     quantity: "",
@@ -541,7 +570,7 @@ function ProductForm({ token }: { token: string }) {
         alert("Бүтээгдэхүүн амжилттай нэмэгдлээ!");
         setFormData({
           title: "",
-          descripton: "",
+          description: "",
           price: "",
           priceAfterDiscount: "",
           quantity: "",
@@ -603,7 +632,8 @@ function ProductForm({ token }: { token: string }) {
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              aria-label="Бүтээгдэхүүний нэр"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
               required
             />
           </div>
@@ -613,16 +643,17 @@ function ProductForm({ token }: { token: string }) {
               Тайлбар (хамгийн багадаа 10 тэмдэгт) <span className="text-red-500">*</span>
             </label>
             <textarea
-              name="descripton"
-              value={formData.descripton}
+              name="description"
+              value={formData.description}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              aria-label="Бүтээгдэхүүний тайлбар"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
               rows={3}
               minLength={10}
               placeholder="Бүтээгдэхүүний дэлгэрэнгүй тайлбар (хамгийн багадаа 10 тэмдэгт)"
               required
             />
-            <p className="text-xs text-gray-500 mt-1">{formData.descripton.length}/10 тэмдэгт</p>
+            <p className="text-xs text-gray-500 mt-1">{formData.description.length}/10 тэмдэгт</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -635,7 +666,8 @@ function ProductForm({ token }: { token: string }) {
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                aria-label="Бүтээгдэхүүний үнэ"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
                 min="0"
                 step="0.01"
                 placeholder="0.00"
@@ -651,7 +683,8 @@ function ProductForm({ token }: { token: string }) {
                 name="priceAfterDiscount"
                 value={formData.priceAfterDiscount}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                aria-label="Хөнгөлөлттэй үнэ"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
                 min="0"
                 step="0.01"
                 placeholder="0.00"
@@ -666,7 +699,8 @@ function ProductForm({ token }: { token: string }) {
               name="quantity"
               value={formData.quantity}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              aria-label="Бүтээгдэхүүний тоо ширхэг"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
               min="0"
               placeholder="0"
             />
@@ -681,7 +715,8 @@ function ProductForm({ token }: { token: string }) {
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                aria-label="Бүтээгдэхүүний category сонгох"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
                 required
               >
                 <option value="">Category сонгох</option>
@@ -704,7 +739,8 @@ function ProductForm({ token }: { token: string }) {
                 name="isFeatured"
                 checked={formData.isFeatured}
                 onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-                className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                aria-label="Онцгой бүтээгдэхүүн эсэх"
+                className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
               />
               <span className="text-sm font-medium">Онцгой бүтээгдэхүүн (Featured Products хэсэгт харагдана)</span>
             </label>
@@ -713,14 +749,15 @@ function ProductForm({ token }: { token: string }) {
           <div>
             <label className="block text-sm font-medium mb-2">Үндсэн зураг</label>
             {!coverPreview ? (
-              <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                <Upload className="w-10 h-10 text-gray-400 mb-2" />
+              <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-all duration-200 hover:border-blue-400">
+                <Upload className="w-10 h-10 text-gray-400 mb-2" aria-hidden="true" />
                 <span className="text-sm text-gray-500">Үндсэн зураг сонгох</span>
                 <input
                   type="file"
                   className="hidden"
                   accept="image/*"
                   onChange={handleCoverChange}
+                  aria-label="Үндсэн зураг сонгох"
                 />
               </label>
             ) : (
@@ -734,9 +771,10 @@ function ProductForm({ token }: { token: string }) {
                 <button
                   type="button"
                   onClick={removeCover}
-                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                  aria-label="Үндсэн зургийг устгах"
+                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 >
-                  <X size={20} />
+                  <X size={20} aria-hidden="true" />
                 </button>
               </div>
             )}
@@ -759,17 +797,18 @@ function ProductForm({ token }: { token: string }) {
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
-                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                    aria-label={`Зураг ${index + 1}-г устгах`}
+                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   >
-                    <X size={16} />
+                    <X size={16} aria-hidden="true" />
                   </button>
                 </div>
               ))}
             </div>
 
             {images.length < 6 && (
-              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                <Upload className="w-8 h-8 text-gray-400 mb-1" />
+              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-all duration-200 hover:border-blue-400">
+                <Upload className="w-8 h-8 text-gray-400 mb-1" aria-hidden="true" />
                 <span className="text-sm text-gray-500">Зураг нэмэх</span>
                 <input
                   type="file"
@@ -777,6 +816,7 @@ function ProductForm({ token }: { token: string }) {
                   accept="image/*"
                   multiple
                   onChange={handleImagesChange}
+                  aria-label="Нэмэлт зураг нэмэх"
                 />
               </label>
             )}
@@ -785,9 +825,20 @@ function ProductForm({ token }: { token: string }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            aria-label={loading ? "Уншиж байна" : "Бүтээгдэхүүн нэмэх товч"}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            {loading ? "Уншиж байна..." : "Бүтээгдэхүүн нэмэх"}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Уншиж байна...
+              </span>
+            ) : (
+              "Бүтээгдэхүүн нэмэх"
+            )}
           </button>
         </form>
       </div>
@@ -796,13 +847,21 @@ function ProductForm({ token }: { token: string }) {
         <h2 className="text-2xl font-bold mb-6">Бүх Бүтээгдэхүүнүүд</h2>
         
         {loadingList ? (
-          <div className="text-center py-8">Ачааллаж байна...</div>
+          <div className="text-center py-8">
+            <div className="inline-flex flex-col items-center gap-3">
+              <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p className="text-gray-600 font-medium">Ачааллаж байна...</p>
+            </div>
+          </div>
         ) : products.length === 0 ? (
           <div className="text-center py-8 text-gray-500">Бүтээгдэхүүн байхгүй байна</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {products.map((product) => (
-              <div key={product._id} className="border rounded-lg p-4 hover:shadow-lg transition">
+              <div key={product._id} className="border rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 {product.imgCover && !product.imgCover.includes('undefined') && (
                   <div className="relative h-40 mb-3">
                     <Image
@@ -814,12 +873,13 @@ function ProductForm({ token }: { token: string }) {
                   </div>
                 )}
                 <h3 className="font-bold text-lg mb-2">{product.title}</h3>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.descripton}</p>
+                <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
                 <p className="text-lg font-bold text-blue-600 mb-2">${product.price}</p>
                 <p className="text-xs text-gray-500 mb-3">ID: {product._id}</p>
                 <button
                   onClick={() => handleDelete(product._id)}
-                  className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700"
+                  aria-label={`${product.title} бүтээгдэхүүнийг устгах`}
+                  className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                 >
                   Устгах
                 </button>
