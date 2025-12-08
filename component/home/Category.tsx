@@ -10,6 +10,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { fetchCategories } from "@/lib/api";
 
+// Category-ийн төрөл
 type Category = {
   _id: string;
   name: string;
@@ -17,6 +18,7 @@ type Category = {
   slug?: string;
 };
 
+// Fallback категориуд (backend ажиллахгүй үед)
 const fallbackCategories = [
   { _id: "1", name: "Kurtas", Image: "/assets/images/categories/01.webp" },
   { _id: "2", name: "Heels", Image: "/assets/images/categories/02.webp" },
@@ -26,6 +28,7 @@ const fallbackCategories = [
   { _id: "6", name: "Shoes", Image: "/assets/images/categories/06.webp" },
 ];
 
+// Категори харуулах компонент - Swiper slider ашиглана
 export default function Category() {
   const [categories, setCategories] = useState<Category[]>(fallbackCategories);
   const [loading, setLoading] = useState(true);
@@ -41,6 +44,7 @@ export default function Category() {
     loadCategories();
   }, []);
 
+  // Зургийн эх сурвалж авах - fallback зураг ашиглана
   const getImageSrc = (image?: string, index: number = 0) => {
     if (!image || image.includes('undefined')) {
       const fallbackImages = [
@@ -99,15 +103,14 @@ export default function Category() {
           >
             {categories.map((category, index) => (
               <SwiperSlide key={category._id}>
-                <Link href={`/products?category=${category.slug || category._id}`}>
+                <Link href={`/products?category=${category._id}`}>
                   <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                    <div className="overflow-hidden">
+                    <div className="relative w-full h-56 md:h-75 overflow-hidden">
                       <Image
                         src={getImageSrc(category.Image, index)}
-                        width={300}
-                        height={300}
+                        fill
                         alt={category.name}
-                        className="w-full h-auto object-cover hover:scale-110 transition-transform duration-300"
+                        className="object-cover hover:scale-110 transition-transform duration-300"
                       />
                     </div>
                     <div className="text-center p-3 md:p-4">

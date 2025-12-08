@@ -3,66 +3,31 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Search, ShoppingBasket, User } from 'lucide-react';
-import CartSidebar from './cart/CartSidebar';
-
-const fashionItems = [
-  "Casual T-Shirts", "Formal Shirts", "Jackets", "Jeans",
-  "Dresses", "Sneakers", "Belts", "Sports Shoes"
-];
-
-const electronicsItems = [
-  "Mobiles", "Laptops", "Macbook", "Televisions",
-  "Lighting", "Smart Watch", "Galaxy Phones", "PC Monitors"
-];
-
-const shopMenuItems = [
-  { label: "Shop Cart", href: "/cart" },
-  { label: "Product Details", href: "/product-details" },
-  { label: "Payment Method", href: "/payment-method" },
-  { label: "Billing Details", href: "/billing-details" },
-  { label: "Addresses", href: "/address" },
-  { label: "Shop Grid", href: "/shop-grid" },
-  { label: "Search", href: "/search" }
-];
-
-const accountMenuItems = [
-  { label: "Dashboard", href: "/account-dashboard" },
-  { label: "My Orders", href: "/account-orders" },
-  { label: "My Profile", href: "/account-profile" },
-  { label: "Edit Profile", href: "/account-edit-profile" },
-  { label: "Addresses", href: "/account-saved-address" },
-  { label: "divider", href: "" },
-  { label: "Login", href: "/authentication-login" },
-  { label: "Register", href: "/authentication-register" },
-  { label: "Password", href: "/authentication-reset-password" }
-];
-
-const blogMenuItems = [
-  { label: "Blog Post", href: "/blog-post" },
-  { label: "Blog Read", href: "/blog-read" }
-];
+import { Menu, X, Search, Heart } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import WishlistSidebar from './wishlist/WishlistSidebar';
+import SearchSidebar from './search/SearchSidebar';
+import { useScrollDirection } from '@/lib/useScrollDirection';
 
 const mobileMenuItems = [
   { label: "Home", href: "/" },
-  { label: "Categories", href: "/categories" },
-  { label: "Shop", href: "/shop" },
+  { label: "Products", href: "/products" },
   { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-  { label: "Account", href: "/account" },
-  { label: "Blog", href: "/blog" }
+  { label: "Contact", href: "/contact" }
 ];
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
-  const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
-  const [blogDropdownOpen, setBlogDropdownOpen] = useState(false);
-  const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
+  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const scrollDirection = useScrollDirection();
 
   return (
-    <header className="bg-white text-black shadow-lg">
+    <header 
+      className={`bg-white text-black shadow-lg fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${
+        scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'
+      }`}
+    >
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -73,10 +38,15 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden text-white hover:text-gray-300 transition"
+            className="xl:hidden text-black hover:text-gray-600 transition z-50"
           >
-            <Menu size={28} />
+            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
+
+          {/* Mobile Logo */}
+          <Link href="/" className="xl:hidden absolute left-1/2 transform -translate-x-1/2">
+            <Image src="/assets/images/logo.webp" width={100} height={33} alt="Logo" />
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden xl:flex items-center space-x-8 flex-1 ml-12">
@@ -84,79 +54,9 @@ export default function Header() {
               Home
             </Link>
 
-            {/* Categories Dropdown */}
-            <div className="relative group">
-              <button
-                onMouseEnter={() => setCategoriesDropdownOpen(true)}
-                onMouseLeave={() => setCategoriesDropdownOpen(false)}
-                className="hover:text-gray-300 transition"
-              >
-                Categories
-              </button>
-              {categoriesDropdownOpen && (
-                <div
-                  onMouseEnter={() => setCategoriesDropdownOpen(true)}
-                  onMouseLeave={() => setCategoriesDropdownOpen(false)}
-                  className="absolute left-0 top-full mt-2 w-[800px] bg-white text-gray-900 shadow-xl rounded-lg p-6 z-50"
-                >
-                  <div className="grid grid-cols-3 gap-6">
-                    <div>
-                      <h6 className="font-bold text-lg mb-3">Fashion</h6>
-                      <ul className="space-y-2">
-                        {fashionItems.map((item) => (
-                          <li key={item}>
-                            <a href="#" className="hover:text-blue-600">{item}</a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h6 className="font-bold text-lg mb-3">Electronics</h6>
-                      <ul className="space-y-2">
-                        {electronicsItems.map((item) => (
-                          <li key={item}>
-                            <a href="#" className="hover:text-blue-600">{item}</a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <Image
-                        src="/assets/images/menu-img.webp"
-                        width={250}
-                        height={300}
-                        className="w-full h-full object-cover rounded-lg"
-                        alt="Promo"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Shop Dropdown */}
-            <div className="relative group">
-              <button
-                onMouseEnter={() => setShopDropdownOpen(true)}
-                onMouseLeave={() => setShopDropdownOpen(false)}
-                className="hover:text-gray-300 transition"
-              >
-                Shop
-              </button>
-              {shopDropdownOpen && (
-                <div
-                  onMouseEnter={() => setShopDropdownOpen(true)}
-                  onMouseLeave={() => setShopDropdownOpen(false)}
-                  className="absolute left-0 top-full mt-2 w-56 bg-white text-gray-900 shadow-xl rounded-lg py-2 z-50"
-                >
-                  {shopMenuItems.map((item) => (
-                    <Link key={item.label} href={item.href} className="block px-4 py-2 hover:bg-gray-100">
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+            <Link href="/products" className="hover:text-gray-300 transition">
+              Products
+            </Link>
 
             <Link href="/about" className="hover:text-gray-300 transition">
               About
@@ -165,101 +65,73 @@ export default function Header() {
             <Link href="/contact" className="hover:text-gray-300 transition">
               Contact
             </Link>
-
-            {/* Account Dropdown */}
-            <div className="relative group">
-              <button
-                onMouseEnter={() => setAccountDropdownOpen(true)}
-                onMouseLeave={() => setAccountDropdownOpen(false)}
-                className="hover:text-gray-300 transition"
-              >
-                Account
-              </button>
-              {accountDropdownOpen && (
-                <div
-                  onMouseEnter={() => setAccountDropdownOpen(true)}
-                  onMouseLeave={() => setAccountDropdownOpen(false)}
-                  className="absolute left-0 top-full mt-2 w-56 bg-white text-gray-900 shadow-xl rounded-lg py-2 z-50"
-                >
-                  {accountMenuItems.map((item) => 
-                    item.label === "divider" ? (
-                      <hr key="divider" className="my-2" />
-                    ) : (
-                      <Link key={item.label} href={item.href} className="block px-4 py-2 hover:bg-gray-100">
-                        {item.label}
-                      </Link>
-                    )
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Blog Dropdown */}
-            <div className="relative group">
-              <button
-                onMouseEnter={() => setBlogDropdownOpen(true)}
-                onMouseLeave={() => setBlogDropdownOpen(false)}
-                className="hover:text-gray-300 transition"
-              >
-                Blog
-              </button>
-              {blogDropdownOpen && (
-                <div
-                  onMouseEnter={() => setBlogDropdownOpen(true)}
-                  onMouseLeave={() => setBlogDropdownOpen(false)}
-                  className="absolute left-0 top-full mt-2 w-48 bg-white text-gray-900 shadow-xl rounded-lg py-2 z-50"
-                >
-                  {blogMenuItems.map((item) => (
-                    <Link key={item.label} href={item.href} className="block px-4 py-2 hover:bg-gray-100">
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Right Icons */}
           <div className="flex items-center space-x-4">
-            <Link href="/search" className="hover:text-gray-300 transition">
-              <Search size={22} />
-            </Link>
             <button 
-              onClick={() => setCartOpen(true)}
-              className="relative hover:text-gray-300 transition"
+              onClick={() => setSearchOpen(true)}
+              className="hover:text-gray-300 transition"
             >
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                8
-              </span>
-              <ShoppingBasket size={22} />
+              <Search size={22} />
             </button>
-            <Link href="/account" className="hover:text-gray-300 transition">
-              <User size={22} />
-            </Link>
+            <button 
+              onClick={() => setWishlistOpen(true)}
+              className="hover:text-red-500 transition"
+            >
+              <Heart size={22} />
+            </button>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="xl:hidden mt-4 bg-gray-800 rounded-lg p-4">
-            <div className="flex justify-between items-center mb-4">
-              <Image src="/assets/images/logo.webp" width={96} height={32} alt="Logo" />
-              <button onClick={() => setMobileMenuOpen(false)}>
-                <X size={24} />
-              </button>
-            </div>
-            <div className="space-y-3">
-              {mobileMenuItems.map((item) => (
-                <Link key={item.label} href={item.href} className="block py-2 hover:text-gray-300">
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </nav>
+
+      {/* Mobile Dropdown Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Backdrop with blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 xl:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            
+            {/* Dropdown */}
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="absolute top-full left-4 mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-gray-100 z-50 xl:hidden overflow-hidden"
+            >
+              <div className="py-2">
+                {mobileMenuItems.map((item, index) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05, duration: 0.2 }}
+                  >
+                    <Link 
+                      href={item.href} 
+                      className="block py-3 px-4 hover:bg-gray-100/80 transition text-black font-medium"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
       
-      <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+      <SearchSidebar isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+      <WishlistSidebar isOpen={wishlistOpen} onClose={() => setWishlistOpen(false)} />
     </header>
   );
 }

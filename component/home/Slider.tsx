@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+// Slider-ийн слайдууд
 const slides = [
   {
     id: 0,
@@ -52,6 +53,7 @@ const slides = [
   },
 ];
 
+// Нүүр хуудасны slider - Автомат болон гараар солих боломжтой
 export default function Slider() {
   const [currentSlide, setCurrentSlide] = useState(0);
 

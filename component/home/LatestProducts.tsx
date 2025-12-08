@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {  ShoppingBasket } from "lucide-react";
+import { Heart } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
-import { fetchProducts } from "@/lib/api";
+import { fetchProducts, fetchCategories } from "@/lib/api";
+import { useWishlist } from "@/lib/wishlistContext";
 
 type Product = {
   _id: string;
@@ -16,11 +17,13 @@ type Product = {
   images?: string[];
   ratingsAverage?: number;
   priceAfterDiscount?: number;
+  category?: string;
 };
 
-const tabs = [
-  { id: "all", label: "All Products" },
-];
+type Category = {
+  _id: string;
+  name: string;
+};
 
 const fallbackImages = [
   "/assets/images/new-arrival/01.webp",
@@ -34,20 +37,28 @@ const fallbackImages = [
 ];
 
 export default function LatestProducts() {
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [activeTab, setActiveTab] = useState("all");
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadProducts() {
+    async function loadData() {
       setLoading(true);
-      const data = await fetchProducts();
-      if (data && data.length > 0) {
-        setProducts(data);
+      const [productsData, categoriesData] = await Promise.all([
+        fetchProducts(),
+        fetchCategories()
+      ]);
+      if (productsData && productsData.length > 0) {
+        setProducts(productsData);
+      }
+      if (categoriesData && categoriesData.length > 0) {
+        setCategories(categoriesData);
       }
       setLoading(false);
     }
-    loadProducts();
+    loadData();
   }, []);
 
   const getImageSrc = (imgCover?: string, images?: string[], index: number = 0) => {
@@ -60,7 +71,16 @@ export default function LatestProducts() {
     return fallbackImages[index % fallbackImages.length];
   };
 
-  const displayProducts = products.slice(0, 10);
+  const tabs = [
+    { id: "all", label: "All Products" },
+    ...categories.map(cat => ({ id: cat._id, label: cat.name }))
+  ];
+
+  const filteredProducts = activeTab === "all" 
+    ? products 
+    : products.filter(p => p.category === activeTab);
+
+  const displayProducts = filteredProducts.slice(0, 10);
 
   return (
     <section className="py-16 bg-gray-50">
@@ -137,19 +157,31 @@ export default function LatestProducts() {
                   </div>
                 )}
                 
-                <div className="relative overflow-hidden">
+                <div className="relative w-full h-80 overflow-hidden">
                   <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                    <button className="p-2 hover:bg-gray-100 rounded-full transition">
-                      <ShoppingBasket size={20} />
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (isInWishlist(product._id)) {
+                          removeFromWishlist(product._id);
+                        } else {
+                          addToWishlist(product);
+                        }
+                      }}
+                      className="p-2 hover:bg-red-100 rounded-full transition"
+                    >
+                      <Heart 
+                        size={20} 
+                        className={`transition ${isInWishlist(product._id) ? 'fill-red-500 text-red-500' : 'hover:fill-red-500 hover:text-red-500'}`} 
+                      />
                     </button>
                   </div>
                   <Link href={`/product-details?id=${product._id}`}>
                     <Image
                       src={getImageSrc(product.imgCover, product.images, index)}
-                      width={300}
-                      height={300}
+                      fill
                       alt={product.title}
-                      className="w-full h-auto object-cover"
+                      className="object-cover"
                     />
                   </Link>
                 </div>

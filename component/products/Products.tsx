@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBasket } from "lucide-react";
+import { Heart } from "lucide-react";
+import { useWishlist } from "@/lib/wishlistContext";
 import { fetchProducts, fetchCategories } from "@/lib/api";
 
+// Бүтээгдэхүүний төрөл
 type Product = {
   _id: string;
   title: string;
@@ -14,17 +17,26 @@ type Product = {
   priceAfterDiscount?: number;
   imgCover?: string;
   images?: string[];
+  category?: string;
 };
 
+// Category төрөл
 type Category = {
   _id: string;
   name: string;
 };
 
+// Бүтээгдэхүүний жагсаалт хуудас - Шүүлт, эрэмбэлэлт, wishlist
 export const Products = () => {
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get("category");
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState("new");
 
   useEffect(() => {
     async function loadData() {
@@ -34,16 +46,24 @@ export const Products = () => {
       ]);
       setProducts(productsData);
       setCategories(categoriesData);
+      
+      // Auto-select category from URL
+      if (categoryFromUrl) {
+        setSelectedCategories([categoryFromUrl]);
+      }
+      
       setLoading(false);
     }
     loadData();
-  }, []);
+  }, [categoryFromUrl]);
 
+  // Хямдралын хувийг тооцоолох
   const calculateDiscount = (price: number, priceAfterDiscount?: number) => {
     if (!priceAfterDiscount) return 0;
     return Math.round(((price - priceAfterDiscount) / price) * 100);
   };
 
+  // Зургийн эх сурвалж авах - fallback зураг ашиглана
   const getImageSrc = (imgCover?: string, images?: string[], index: number = 0) => {
     if (imgCover && !imgCover.includes('undefined')) {
       return imgCover;
@@ -61,6 +81,56 @@ export const Products = () => {
     ];
     return fallbackImages[index % fallbackImages.length];
   };
+
+  // Category сонгох/болих
+  const handleCategoryToggle = (categoryId: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+
+  // Бүтээгдэхүүнүүдийг шүүж, эрэмбэлэх
+  const filteredAndSortedProducts = () => {
+    let result = [...products];
+
+    // Filter by categories
+    if (selectedCategories.length > 0) {
+      result = result.filter(p => p.category && selectedCategories.includes(p.category));
+    }
+
+    // Sort
+    switch (sortBy) {
+      case "new":
+        // Assuming newer products are at the end
+        result = result.reverse();
+        break;
+      case "popularity":
+        // Keep original order (or add popularity field later)
+        break;
+      case "discount":
+        result = result.sort((a, b) => {
+          const discountA = calculateDiscount(a.price, a.priceAfterDiscount);
+          const discountB = calculateDiscount(b.price, b.priceAfterDiscount);
+          return discountB - discountA;
+        });
+        break;
+      case "price-high":
+        result = result.sort((a, b) => b.price - a.price);
+        break;
+      case "price-low":
+        result = result.sort((a, b) => a.price - b.price);
+        break;
+      case "rating":
+        // Keep original order (or add rating field later)
+        break;
+    }
+
+    return result;
+  };
+
+  const displayProducts = filteredAndSortedProducts();
   return (
     <section className="py-4">
       <div className="container mx-auto px-4">
@@ -76,7 +146,12 @@ export const Products = () => {
                 <div className="max-h-64 overflow-y-auto space-y-2">
                   {categories.map((cat) => (
                     <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" className="w-4 h-4" />
+                      <input 
+                        type="checkbox" 
+                        className="w-4 h-4"
+                        checked={selectedCategories.includes(cat._id)}
+                        onChange={() => handleCategoryToggle(cat._id)}
+                      />
                       <span className="text-sm">{cat.name}</span>
                     </label>
                   ))}
@@ -90,16 +165,20 @@ export const Products = () => {
             <div className="bg-white rounded-lg shadow-md">
               {/* Header */}
               <div className="bg-gray-100 p-4 flex flex-wrap items-center justify-between gap-4">
-                <div className="font-semibold">{products.length} Items Found</div>
+                <div className="font-semibold">{displayProducts.length} Items Found</div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm">Sort By</span>
-                  <select className="border rounded px-3 py-1">
-                    <option>What&apos;s New</option>
-                    <option>Popularity</option>
-                    <option>Better Discount</option>
-                    <option>Price: High to Low</option>
-                    <option>Price: Low to High</option>
-                    <option>Customer Rating</option>
+                  <select 
+                    className="border rounded px-3 py-1"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    <option value="new">What&apos;s New</option>
+                    <option value="popularity">Popularity</option>
+                    <option value="discount">Better Discount</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="rating">Customer Rating</option>
                   </select>
                 </div>
               </div>
@@ -108,27 +187,40 @@ export const Products = () => {
               <div className="p-4">
                 {loading ? (
                   <div className="text-center py-8">Loading products...</div>
-                ) : products.length === 0 ? (
-                  <div className="text-center py-8">No products available</div>
+                ) : displayProducts.length === 0 ? (
+                  <div className="text-center py-8">No products found</div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {products.map((product, index) => {
+                    {displayProducts.map((product, index) => {
                       const discount = calculateDiscount(product.price, product.priceAfterDiscount);
                       return (
                         <div key={product._id} className="border rounded-lg overflow-hidden group">
-                          <div className="relative overflow-hidden">
+                          <div className="relative w-full h-64 overflow-hidden">
                             <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 bg-white/90 py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                              <button className="p-2 hover:bg-gray-100 rounded-full transition">
-                                <ShoppingBasket size={18} />
+                              <button 
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  if (isInWishlist(product._id)) {
+                                    removeFromWishlist(product._id);
+                                  } else {
+                                    addToWishlist(product);
+                                  }
+                                }}
+                                className="p-2 hover:bg-red-100 rounded-full transition"
+                              >
+                                <Heart 
+                                  size={18} 
+                                  className={`transition ${isInWishlist(product._id) ? 'fill-red-500 text-red-500' : 'hover:fill-red-500 hover:text-red-500'}`} 
+                                />
                               </button>
                             </div>
                             <Link href={`/product-details?id=${product._id}`}>
                               <Image
                                 src={getImageSrc(product.imgCover, product.images, index)}
-                                width={300}
-                                height={300}
+                                fill
                                 alt={product.title}
-                                className="w-full h-auto object-cover"
+                                className="object-cover"
                               />
                             </Link>
                           </div>

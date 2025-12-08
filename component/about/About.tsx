@@ -1,5 +1,6 @@
 import Image from 'next/image';
 
+// Бидний тухай хуудасны өгөгдөл
 const aboutData = {
   story: {
     title: "Our Story",
@@ -43,11 +44,12 @@ const aboutData = {
   ]
 };
 
+// Бидний тухай хуудас - компанийн түүх, онцлог, брэндүүд
 export default function About() {
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
-        {/* Our Story Section */}
+        {/* Бидний түүх хэсэг */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           <div>
             <h3 className="font-bold text-2xl mb-4">{aboutData.story.title}</h3>
@@ -68,7 +70,7 @@ export default function About() {
           </div>
         </div>
 
-        {/* Why Choose Us Section */}
+        {/* Яагаад биднийг сонгох вэ хэсэг */}
         <div className="py-16 flex items-center gap-4">
           <div className="flex-1 h-px bg-gray-300" />
           <h3 className="text-2xl font-bold">Why Choose Us</h3>
@@ -89,7 +91,7 @@ export default function About() {
           ))}
         </div>
 
-        {/* Shop By Brands Section */}
+        {/* Брэндээр дэлгүүр хийх хэсэг */}
         <div className="py-16 flex items-center gap-4">
           <div className="flex-1 h-px bg-gray-300" />
           <h3 className="text-2xl font-bold">Shop By Brands</h3>

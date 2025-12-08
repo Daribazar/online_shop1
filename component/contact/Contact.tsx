@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 
+// Холбоо барих хуудас - Форм болон холбоо барих мэдээлэл
 export const Contact = () => {
+  // Формын өгөгдөл
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,6 +18,7 @@ export const Contact = () => {
     message: string;
   }>({ type: null, message: "" });
 
+  // Форм илгээх
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -54,6 +57,7 @@ export const Contact = () => {
         }
       };
 
+  // Input өөрчлөгдөх үед
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
@@ -64,7 +68,7 @@ export const Contact = () => {
   return (
     <section className="py-8 md:py-12 lg:py-16">
       <div className="container mx-auto px-4">
-        {/* Section Title */}
+        {/* Хэсгийн гарчиг */}
         <div className="flex items-center gap-4 mb-8">
           <div className="flex-1 h-px bg-gray-300" />
           <h3 className="text-2xl md:text-3xl font-bold text-center">Why Choose Us</h3>
@@ -72,7 +76,7 @@ export const Contact = () => {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-          {/* Contact Form */}
+          {/* Холбоо барих форм */}
           <div className="xl:col-span-8">
             <div className="p-6 md:p-8 border border-gray-200 rounded-lg shadow-sm">
               <form onSubmit={handleSubmit}>
@@ -158,7 +162,7 @@ export const Contact = () => {
             </div>
           </div>
 
-          {/* Contact Info */}
+          {/* Холбоо барих мэдээлэл */}
           <div className="xl:col-span-4">
             <div className="p-6 border border-gray-200 rounded-lg shadow-sm">
               <div className="mb-6">
