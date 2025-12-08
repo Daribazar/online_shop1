@@ -32,7 +32,9 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
       }
 
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1';
+        const API_URL = process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== 'undefined'
+          ? process.env.NEXT_PUBLIC_API_URL 
+          : 'http://localhost:5001/api/v1';
         const response = await fetch(`${API_URL}/products`);
         
         if (!response.ok) throw new Error('Failed to fetch products');

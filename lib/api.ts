@@ -1,5 +1,14 @@
 // Backend API-ийн үндсэн хаяг
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1';
+const getApiUrl = () => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  // undefined эсвэл хоосон string бол default хаяг ашиглах
+  if (!envUrl || envUrl === 'undefined') {
+    return 'http://localhost:5001/api/v1';
+  }
+  return envUrl;
+};
+
+const API_URL = getApiUrl();
 
 // Бүх категориудыг татаж авах
 export async function fetchCategories() {

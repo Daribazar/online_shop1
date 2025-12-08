@@ -36,7 +36,9 @@ interface Product {
 }
 
 // Backend API хаяг
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== 'undefined'
+  ? process.env.NEXT_PUBLIC_API_URL 
+  : 'http://localhost:5001/api/v1';
 
 // Админ хуудас - Category болон бүтээгдэхүүн удирдах
 export const Admin = () => {

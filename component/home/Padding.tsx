@@ -40,7 +40,8 @@ export default function Padding() {
   useEffect(() => {
     async function loadFeaturedProducts() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api/v1';
+        const response = await fetch(`${API_URL}/products`);
         const data = await response.json();
         // Filter only featured products
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
