@@ -18,6 +18,19 @@ interface Category {
   updatedAt?: string;
 }
 
+// Size-ын төрөл
+interface SizeInfo {
+  size: string;
+  quantity: number;
+  description: string;
+}
+
+// Category/Brand object төрөл
+interface CategoryBrand {
+  _id: string;
+  name: string;
+}
+
 // Бүтээгдэхүүний төрөл
 interface Product {
   _id: string;
@@ -26,11 +39,12 @@ interface Product {
   price: number;
   priceAfterDiscount?: number;
   quantity?: number;
+  sizes?: SizeInfo[];
   imgCover?: string;
   images?: string[];
-  category?: string;
-  subcategory?: string;
-  brand?: string;
+  category?: string | CategoryBrand;
+  subcategory?: string | CategoryBrand;
+  brand?: string | CategoryBrand;
   isFeatured?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -460,6 +474,15 @@ function ProductForm({ token }: { token: string }) {
     isFeatured: false,
   });
   
+  // Size-тай холбоотой state-үүд
+  const [numberOfSizes, setNumberOfSizes] = useState<number>(3); // Default 3 (S, M, L)
+  const [useCustomSizes, setUseCustomSizes] = useState<boolean>(false); // Default size эсвэл өөрийн size
+  const [sizes, setSizes] = useState<SizeInfo[]>([
+    { size: "S", quantity: 0, description: "" },
+    { size: "M", quantity: 0, description: "" },
+    { size: "L", quantity: 0, description: "" },
+  ]);
+  
   const [imgCover, setImgCover] = useState<File | null>(null);
   const [images, setImages] = useState<File[]>([]);
   const [coverPreview, setCoverPreview] = useState<string>("");
@@ -502,6 +525,65 @@ function ProductForm({ token }: { token: string }) {
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  // Size-ын тоог өөрчлөх
+  const handleNumberOfSizesChange = (count: number) => {
+    setNumberOfSizes(count);
+    const newSizes: SizeInfo[] = [];
+    
+    if (!useCustomSizes) {
+      // Default size-ууд: S, M, L, XL, XXL гэх мэт
+      const defaultSizes = ["S", "M", "L", "XL", "XXL"];
+      for (let i = 0; i < count && i < defaultSizes.length; i++) {
+        newSizes.push({
+          size: defaultSizes[i],
+          quantity: sizes[i]?.quantity || 0,
+          description: sizes[i]?.description || "",
+        });
+      }
+    } else {
+      // Хэрвээ тоо нэмэгдвэл шинэ size нэмэх
+      for (let i = 0; i < count; i++) {
+        newSizes.push({
+          size: sizes[i]?.size || "",
+          quantity: sizes[i]?.quantity || 0,
+          description: sizes[i]?.description || "",
+        });
+      }
+    }
+    
+    setSizes(newSizes);
+  };
+
+  // Size-ын утгыг шинэчлэх
+  const handleSizeChange = (index: number, field: keyof SizeInfo, value: string | number) => {
+    const newSizes = [...sizes];
+    newSizes[index] = {
+      ...newSizes[index],
+      [field]: value,
+    };
+    setSizes(newSizes);
+  };
+
+  // Default эсвэл custom size солих
+  const toggleSizeMode = () => {
+    const newMode = !useCustomSizes;
+    setUseCustomSizes(newMode);
+    
+    if (!newMode) {
+      // Default size руу буцах
+      const defaultSizes = ["S", "M", "L", "XL", "XXL"];
+      const newSizes: SizeInfo[] = [];
+      for (let i = 0; i < numberOfSizes && i < defaultSizes.length; i++) {
+        newSizes.push({
+          size: defaultSizes[i],
+          quantity: 0,
+          description: "",
+        });
+      }
+      setSizes(newSizes);
+    }
   };
 
   const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -557,6 +639,11 @@ function ProductForm({ token }: { token: string }) {
         }
       });
       
+      // Size-ын мэдээллийг нэмэх
+      if (sizes.length > 0) {
+        data.append("sizes", JSON.stringify(sizes));
+      }
+      
       if (imgCover) data.append("imgCover", imgCover);
       images.forEach((img) => data.append("images", img));
 
@@ -579,6 +666,14 @@ function ProductForm({ token }: { token: string }) {
           brand: "",
           isFeatured: false,
         });
+        // Size-ыг default руу буцаах
+        setNumberOfSizes(3);
+        setUseCustomSizes(false);
+        setSizes([
+          { size: "S", quantity: 0, description: "" },
+          { size: "M", quantity: 0, description: "" },
+          { size: "L", quantity: 0, description: "" },
+        ]);
         setImgCover(null);
         setImages([]);
         setCoverPreview("");
@@ -692,18 +787,106 @@ function ProductForm({ token }: { token: string }) {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Тоо ширхэг</label>
-            <input
-              type="number"
-              name="quantity"
-              value={formData.quantity}
-              onChange={handleInputChange}
-              aria-label="Бүтээгдэхүүний тоо ширхэг"
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
-              min="0"
-              placeholder="0"
-            />
+          {/* Size-ын хэсэг */}
+          <div className="border-t pt-6 space-y-4">
+            <h3 className="text-lg font-semibold">Size мэдээлэл</h3>
+            
+            {/* Size-ын горим сонгох */}
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useCustomSizes}
+                  onChange={toggleSizeMode}
+                  className="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium">Өөрийн size оруулах (default: S, M, L, XL, XXL)</span>
+              </label>
+            </div>
+
+            {/* Size-ын тоо сонгох */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Хэдэн төрлийн size байгаа вэ?
+              </label>
+              <input
+                type="number"
+                value={numberOfSizes}
+                onChange={(e) => handleNumberOfSizesChange(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
+                min="1"
+                max="10"
+                placeholder="3"
+              />
+              <p className="text-xs text-gray-500 mt-1">1-10 хооронд сонгоно уу</p>
+            </div>
+
+            {/* Size бүрийн мэдээлэл */}
+            <div className="space-y-4">
+              {sizes.map((sizeInfo, index) => (
+                <div key={index} className="border rounded-lg p-4 bg-gray-50 space-y-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-semibold text-blue-600">Size #{index + 1}</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Size нэр */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Size <span className="text-red-500">*</span>
+                      </label>
+                      {useCustomSizes ? (
+                        <input
+                          type="text"
+                          value={sizeInfo.size}
+                          onChange={(e) => handleSizeChange(index, "size", e.target.value)}
+                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                          placeholder="жнь: XL"
+                          required
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={sizeInfo.size}
+                          readOnly
+                          className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
+                        />
+                      )}
+                    </div>
+
+                    {/* Тоо ширхэг */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Тоо ширхэг <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={sizeInfo.quantity}
+                        onChange={(e) => handleSizeChange(index, "quantity", parseInt(e.target.value) || 0)}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        min="0"
+                        placeholder="0"
+                        required
+                      />
+                    </div>
+
+                    {/* Нэмэлт тайлбар */}
+                    <div className="md:col-span-1">
+                      <label className="block text-sm font-medium mb-1">
+                        Нэмэлт тайлбар
+                      </label>
+                      <input
+                        type="text"
+                        value={sizeInfo.description}
+                        onChange={(e) => handleSizeChange(index, "description", e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="жнь: 40-50кг хүнд тохиромжтой"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -875,6 +1058,52 @@ function ProductForm({ token }: { token: string }) {
                 <h3 className="font-bold text-lg mb-2">{product.title}</h3>
                 <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
                 <p className="text-lg font-bold text-blue-600 mb-2">${product.price}</p>
+                
+                {/* Category болон Brand харуулах */}
+                <div className="mb-3 text-xs space-y-1">
+                  {product.category && (
+                    <p>
+                      <span className="font-semibold text-gray-700">Category:</span>{' '}
+                      <span className="text-gray-900 font-medium">
+                        {typeof product.category === 'string' 
+                          ? product.category 
+                          : product.category.name}
+                      </span>
+                    </p>
+                  )}
+                  {product.brand && (
+                    <p>
+                      <span className="font-semibold text-gray-700">Brand:</span>{' '}
+                      <span className="text-gray-900 font-medium">
+                        {typeof product.brand === 'string' 
+                          ? product.brand 
+                          : product.brand.name}
+                      </span>
+                    </p>
+                  )}
+                </div>
+                
+                {/* Size мэдээлэл харуулах */}
+                {product.sizes && product.sizes.length > 0 && (
+                  <div className="mb-3 text-xs">
+                    <p className="font-semibold text-gray-700 mb-1">Sizes:</p>
+                    <div className="space-y-1">
+                      {product.sizes.map((sizeInfo, idx) => (
+                        <div key={idx} className="bg-gray-50 p-2 rounded">
+                          <span className="font-medium">{sizeInfo.size}</span>
+                          {" - "}
+                          <span className="text-gray-600">{sizeInfo.quantity} ширхэг</span>
+                          {sizeInfo.description && (
+                            <p className="text-gray-500 italic text-xs mt-1">
+                              {sizeInfo.description}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 <p className="text-xs text-gray-500 mb-3">ID: {product._id}</p>
                 <button
                   onClick={() => handleDelete(product._id)}

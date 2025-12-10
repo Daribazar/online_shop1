@@ -8,6 +8,12 @@ import { Heart } from "lucide-react";
 import { useWishlist } from "@/lib/wishlistContext";
 import { fetchProducts, fetchCategories } from "@/lib/api";
 
+// Category төрөл
+type Category = {
+  _id: string;
+  name: string;
+};
+
 // Бүтээгдэхүүний төрөл
 type Product = {
   _id: string;
@@ -17,13 +23,7 @@ type Product = {
   priceAfterDiscount?: number;
   imgCover?: string;
   images?: string[];
-  category?: string;
-};
-
-// Category төрөл
-type Category = {
-  _id: string;
-  name: string;
+  category?: string | Category;
 };
 
 // Бүтээгдэхүүний жагсаалт хуудас - Шүүлт, эрэмбэлэлт, wishlist
@@ -97,7 +97,13 @@ export const Products = () => {
 
     // Filter by categories
     if (selectedCategories.length > 0) {
-      result = result.filter(p => p.category && selectedCategories.includes(p.category));
+      result = result.filter(p => {
+        if (!p.category) return false;
+        const categoryId = typeof p.category === 'string' 
+          ? p.category 
+          : p.category._id;
+        return selectedCategories.includes(categoryId);
+      });
     }
 
     // Sort
