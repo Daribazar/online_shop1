@@ -52,3 +52,60 @@ export async function fetchProductById(id: string) {
     return null;
   }
 }
+
+// Сагс авах
+export async function fetchCart(token: string) {
+  try {
+    const response = await fetch(`${API_URL}/carts`, {
+      headers: {
+        token: token,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch cart');
+    const data = await response.json();
+    return data.cart || data;
+  } catch (error) {
+    console.error('Error fetching cart:', error);
+    return null;
+  }
+}
+
+// Бэлэн мөнгөөр захиалга үүсгэх
+export async function createCashOrder(cartId: string, shippingAddress: any, token: string) {
+  try {
+    const response = await fetch(`${API_URL}/orders/${cartId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        token: token,
+      },
+      body: JSON.stringify({ shippingAddress }),
+    });
+    if (!response.ok) throw new Error('Failed to create order');
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error creating order:', error);
+    throw error;
+  }
+}
+
+// Stripe checkout session үүсгэх
+export async function createCheckoutSession(cartId: string, shippingAddress: any, token: string) {
+  try {
+    const response = await fetch(`${API_URL}/orders/checkOut/${cartId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        token: token,
+      },
+      body: JSON.stringify({ shippingAddress }),
+    });
+    if (!response.ok) throw new Error('Failed to create checkout session');
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error creating checkout:', error);
+    throw error;
+  }
+}
