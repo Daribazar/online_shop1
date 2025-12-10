@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "../component/header";
 import Footer from "../component/footer";
 import { WishlistProvider } from "@/lib/wishlistContext";
+import { AuthProvider } from "@/lib/authContext";
 import NextTopLoader from 'nextjs-toploader';
 
 const geistSans = Geist({
@@ -41,13 +42,15 @@ export default function RootLayout({
           speed={200}
           shadow="0 0 10px #ef4444,0 0 5px #ef4444"
         />
-        <WishlistProvider>
-          <Header />
-          <main className="pt-20">
-            {children}
-          </main>
-          <Footer />
-        </WishlistProvider>
+        <AuthProvider>
+          <WishlistProvider>
+            <Header />
+            <main className="pt-20">
+              {children}
+            </main>
+            <Footer />
+          </WishlistProvider>
+        </AuthProvider>
       </body>
     </html>
   );
