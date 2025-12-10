@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Search, Heart } from 'lucide-react';
+import { Menu, X, Search, Heart, User } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import WishlistSidebar from './wishlist/WishlistSidebar';
 import SearchSidebar from './search/SearchSidebar';
+import ProfileSidebar from './profile/ProfileSidebar';
 import { useScrollDirection } from '@/lib/useScrollDirection';
+import { useAuth } from '@/lib/authContext';
 
 const mobileMenuItems = [
   { label: "Home", href: "/" },
@@ -20,7 +22,9 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const scrollDirection = useScrollDirection();
+  const { isAuthenticated, isGuest } = useAuth();
 
   return (
     <header 
@@ -81,6 +85,20 @@ export default function Header() {
             >
               <Heart size={22} />
             </button>
+            <button 
+              onClick={() => setProfileOpen(true)}
+              className={`hover:text-blue-500 transition ${
+                isAuthenticated ? 'text-blue-600' : 
+                isGuest ? 'text-yellow-500' : ''
+              }`}
+              title={
+                isAuthenticated ? 'Profile' : 
+                isGuest ? 'Guest Profile' : 
+                'Login / Sign Up'
+              }
+            >
+              <User size={22} />
+            </button>
           </div>
         </div>
       </nav>
@@ -132,6 +150,7 @@ export default function Header() {
       
       <SearchSidebar isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
       <WishlistSidebar isOpen={wishlistOpen} onClose={() => setWishlistOpen(false)} />
+      <ProfileSidebar isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
     </header>
   );
 }

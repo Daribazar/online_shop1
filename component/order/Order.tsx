@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
-import { ShoppingCart, MapPin, CheckCircle, Package } from "lucide-react";
+import { ShoppingCart, MapPin, CheckCircle, Package, User } from "lucide-react";
 import Image from "next/image";
+import { useAuth } from "@/lib/authContext";
 
 // Сагсны бүтээгдэхүүний төрөл
 type CartItem = {
@@ -41,12 +42,14 @@ export const OrderPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const cartId = searchParams.get("cartId");
+  const { user, isAuthenticated } = useAuth();
 
   // State
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [checkoutAsGuest, setCheckoutAsGuest] = useState(!isAuthenticated);
   
   // Хаягийн мэдээлэл
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
@@ -57,6 +60,18 @@ export const OrderPage = () => {
 
   // Алдааны мессеж
   const [error, setError] = useState<string>("");
+
+  // Хэрэв хэрэглэгч нэвтэрсэн бол хаягийг автоматаар дүүргэх
+  useEffect(() => {
+    if (isAuthenticated && user && user.addresses && user.addresses.length > 0) {
+      const firstAddress = user.addresses[0];
+      setShippingAddress({
+        street: firstAddress.street || "",
+        city: firstAddress.city || "",
+        phone: firstAddress.phone || "",
+      });
+    }
+  }, [isAuthenticated, user]);
 
   // Сагсны мэдээлэл татах
   useEffect(() => {
@@ -229,6 +244,40 @@ export const OrderPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Зүүн тал - Хүргэлтийн хаяг */}
           <div className="lg:col-span-2">
+            {/* Checkout Type Selection */}
+            {!isAuthenticated && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <User className="w-5 h-5 text-blue-600" />
+                  <p className="text-sm font-semibold text-blue-900">
+                    Proceeding as Guest
+                  </p>
+                </div>
+                <p className="text-sm text-blue-700">
+                  You can checkout as a guest or{" "}
+                  <button
+                    onClick={() => router.push("/?openProfile=true")}
+                    className="underline font-semibold hover:text-blue-900"
+                  >
+                    login to save your information
+                  </button>
+                </p>
+              </div>
+            )}
+
+            {/* User Info Display for Authenticated Users */}
+            {isAuthenticated && user && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <User className="w-5 h-5 text-green-600" />
+                  <p className="text-sm font-semibold text-green-900">
+                    Logged in as {user.name}
+                  </p>
+                </div>
+                <p className="text-sm text-green-700">{user.email}</p>
+              </div>
+            )}
+
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="flex items-center gap-3 mb-4">
                 <MapPin className="w-6 h-6 text-gray-700" />
