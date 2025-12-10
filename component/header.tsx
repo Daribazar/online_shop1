@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, Search, Heart, User } from 'lucide-react';
@@ -23,8 +23,14 @@ export default function Header() {
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const scrollDirection = useScrollDirection();
   const { isAuthenticated, isGuest } = useAuth();
+
+  // Prevent hydration mismatch by only showing auth-dependent UI after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header 
@@ -88,13 +94,17 @@ export default function Header() {
             <button 
               onClick={() => setProfileOpen(true)}
               className={`hover:text-blue-500 transition ${
-                isAuthenticated ? 'text-blue-600' : 
-                isGuest ? 'text-yellow-500' : ''
+                mounted ? (
+                  isAuthenticated ? 'text-blue-600' : 
+                  isGuest ? 'text-yellow-500' : ''
+                ) : ''
               }`}
               title={
-                isAuthenticated ? 'Profile' : 
-                isGuest ? 'Guest Profile' : 
-                'Login / Sign Up'
+                mounted ? (
+                  isAuthenticated ? 'Profile' : 
+                  isGuest ? 'Guest Profile' : 
+                  'Login / Sign Up'
+                ) : 'Profile'
               }
             >
               <User size={22} />
