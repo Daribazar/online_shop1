@@ -9,6 +9,11 @@ import * as motion from "motion/react-client";
 import { fetchProducts, fetchCategories } from "@/lib/api";
 import { useWishlist } from "@/lib/wishlistContext";
 
+type Category = {
+  _id: string;
+  name: string;
+};
+
 type Product = {
   _id: string;
   title: string;
@@ -17,12 +22,7 @@ type Product = {
   images?: string[];
   ratingsAverage?: number;
   priceAfterDiscount?: number;
-  category?: string;
-};
-
-type Category = {
-  _id: string;
-  name: string;
+  category?: string | Category;
 };
 
 const fallbackImages = [
@@ -78,7 +78,12 @@ export default function LatestProducts() {
 
   const filteredProducts = activeTab === "all" 
     ? products 
-    : products.filter(p => p.category === activeTab);
+    : products.filter(p => {
+        const categoryId = typeof p.category === 'string' 
+          ? p.category 
+          : p.category?._id;
+        return categoryId === activeTab;
+      });
 
   const displayProducts = filteredProducts.slice(0, 10);
 

@@ -9,9 +9,6 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { fetchProductById } from "@/lib/api";
 
-// Хувцасны хэмжээнүүд
-const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-
 // Category төрөл
 type Category = {
   _id: string;
@@ -24,6 +21,13 @@ type Brand = {
   name: string;
 };
 
+// Size мэдээлэл
+type SizeInfo = {
+  size: string;
+  quantity: number;
+  description: string;
+};
+
 // Бүтээгдэхүүний төрөл
 type Product = {
   _id: string;
@@ -32,6 +36,7 @@ type Product = {
   price: number;
   priceAfterDiscount?: number;
   quantity?: number;
+  sizes?: SizeInfo[];
   imgCover?: string;
   images?: string[];
   category?: Category | string;
@@ -51,7 +56,7 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
   
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedSize, setSelectedSize] = useState<SizeInfo | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -173,31 +178,64 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
             </div>
             <p className="text-green-600 font-semibold mb-4">inclusive of all taxes</p>
             
-            {product.quantity !== undefined && (
+            {/* Нийт тоо ширхэг (sizes байхгүй бол) */}
+            {!product.sizes && product.quantity !== undefined && (
               <p className="text-gray-600 mb-4">
                 {product.quantity > 0 ? `In Stock: ${product.quantity} items` : 'Out of Stock'}
               </p>
             )}
 
             {/* Size Chart */}
-            <div className="mt-6">
-              <h6 className="font-bold mb-3">Select Size</h6>
-              <div className="flex gap-2 flex-wrap">
-                {sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`px-6 py-2 border rounded ${
-                      selectedSize === size
-                        ? "bg-gray-900 text-white"
-                        : "bg-white hover:bg-gray-100"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+            {product.sizes && product.sizes.length > 0 && (
+              <div className="mt-6">
+                <h6 className="font-bold mb-3">Select Size</h6>
+                <div className="flex gap-2 flex-wrap">
+                  {product.sizes.map((sizeInfo, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedSize(sizeInfo)}
+                      disabled={sizeInfo.quantity === 0}
+                      className={`px-6 py-3 border rounded transition-all ${
+                        selectedSize?.size === sizeInfo.size
+                          ? "bg-gray-900 text-white border-gray-900"
+                          : sizeInfo.quantity === 0
+                          ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed"
+                          : "bg-white hover:bg-gray-100 border-gray-300"
+                      }`}
+                      title={sizeInfo.description || `${sizeInfo.quantity} available`}
+                    >
+                      <div className="text-center">
+                        <div className="font-bold text-lg">{sizeInfo.size}</div>
+                        <div className="text-xs mt-1">
+                          {sizeInfo.quantity > 0 ? `${sizeInfo.quantity} ширхэг` : 'Дууссан'}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Сонгогдсон size-ын тайлбар */}
+                {selectedSize && selectedSize.description && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      <span className="font-semibold">Size {selectedSize.size}:</span> {selectedSize.description}
+                    </p>
+                  </div>
+                )}
+                
+                {/* Сонгогдсон size дээр тоо ширхэг мэдээлэл */}
+                {selectedSize && (
+                  <div className="mt-3">
+                    <p className="text-gray-600">
+                      <span className="font-semibold">Available:</span>{' '}
+                      <span className={selectedSize.quantity > 0 ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
+                        {selectedSize.quantity > 0 ? `${selectedSize.quantity} items in stock` : 'Out of stock'}
+                      </span>
+                    </p>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
 
             {/* Wishlist Button */}
             <div className="mt-6">
