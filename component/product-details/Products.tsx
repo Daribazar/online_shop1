@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Zap, Minus, Plus } from "lucide-react";
 import { useCart } from "@/lib/cartContext";
+import { toast } from "sonner";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { fetchProductById } from "@/lib/api";
@@ -54,6 +55,7 @@ type ProductsProps = {
 
 // Бүтээгдэхүүний дэлгэрэнгүй хуудас - Зураг, мэдээлэл, сагс
 export default function Products({ onCategoryLoad }: ProductsProps) {
+  const router = useRouter();
   const { addToCart, isInCart } = useCart();
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');
@@ -61,6 +63,7 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState<SizeInfo | null>(null);
+  const [selectedQuantity, setSelectedQuantity] = useState(1); // Хэдэн ширхэг авах
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -243,20 +246,151 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
               </div>
             )}
 
-            {/* Add to Cart Button */}
-            <div className="mt-6">
+            {/* Тоо ширхэг сонгох - Size сонгосны дараа л гарна */}
+            {((product?.sizes && product.sizes.length > 0 && selectedSize) || (!product?.sizes || product.sizes.length === 0)) && (
+              <div className="mt-6">
+                <label className="block text-sm font-semibold mb-2">Тоо ширхэг:</label>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      if (selectedQuantity > 1) {
+                        setSelectedQuantity(selectedQuantity - 1);
+                      }
+                    }}
+                    disabled={selectedQuantity <= 1}
+                  >
+                    <Minus size={16} />
+                  </Button>
+                  
+                  <input
+                    type="number"
+                    min="1"
+                    max={selectedSize?.quantity || product?.quantity || 999}
+                    value={selectedQuantity}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value) || 1;
+                      const maxStock = selectedSize?.quantity || product?.quantity || 999;
+                      if (val > maxStock) {
+                        toast.warning(`Максимум ${maxStock} ширхэг авах боломжтой`);
+                        setSelectedQuantity(maxStock);
+                      } else if (val < 1) {
+                        setSelectedQuantity(1);
+                      } else {
+                        setSelectedQuantity(val);
+                      }
+                    }}
+                    className="w-20 text-center border border-gray-300 rounded-lg py-2 font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      const maxStock = selectedSize?.quantity || product?.quantity || 999;
+                      if (selectedQuantity < maxStock) {
+                        setSelectedQuantity(selectedQuantity + 1);
+                      } else {
+                        toast.warning(`Максимум ${maxStock} ширхэг авах боломжтой`);
+                      }
+                    }}
+                    disabled={selectedQuantity >= (selectedSize?.quantity || product?.quantity || 999)}
+                  >
+                    <Plus size={16} />
+                  </Button>
+                  
+                  <span className="text-sm text-gray-600">
+                    / {selectedSize?.quantity || product?.quantity || '∞'} боломжтой
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Add to Cart & Buy Now Buttons */}
+            <div className="mt-6 space-y-3">
+              {/* Сагсанд нэмэх */}
               <Button 
                 size="lg"
                 className="w-full"
-                variant={product && isInCart(product._id) ? "secondary" : "default"}
+                variant={product && selectedSize && isInCart(product._id, selectedSize.size) ? "secondary" : "outline"}
                 onClick={() => {
                   if (!product) return;
-                  addToCart(product);
+                  
+                  // Size-тай бүтээгдэхүүн бол size заавал сонгох ёстой
+                  if (product.sizes && product.sizes.length > 0) {
+                    if (!selectedSize || selectedSize.quantity === 0) {
+                      toast.error('Size сонгоно уу!');
+                      return;
+                    }
+                    // Size info болон available stock дамжуулах
+                    const productWithStock = {
+                      ...product,
+                      availableStock: selectedSize.quantity,
+                      sizes: product.sizes
+                    };
+                    addToCart(productWithStock, selectedSize.size, selectedQuantity);
+                    setSelectedQuantity(1); // Reset quantity
+                  } else {
+                    // Size байхгүй бол энгийн сагслах
+                    const productWithStock = {
+                      ...product,
+                      availableStock: product.quantity || 999
+                    };
+                    addToCart(productWithStock, undefined, selectedQuantity);
+                    setSelectedQuantity(1); // Reset quantity
+                  }
                 }}
+                disabled={product?.sizes && product.sizes.length > 0 && (!selectedSize || selectedSize.quantity === 0)}
               >
                 <ShoppingBag />
-                {product && isInCart(product._id) ? 'Сагсанд байна' : 'Сагсанд нэмэх'}
+                {product && selectedSize && isInCart(product._id, selectedSize.size) ? 'Сагсанд байна' : 'Сагсанд нэмэх'}
               </Button>
+
+              {/* Шууд захиалах (Buy Now) */}
+              <Button 
+                size="lg"
+                className="w-full"
+                variant="default"
+                onClick={() => {
+                  if (!product) return;
+                  
+                  // Size-тай бүтээгдэхүүн бол size заавал сонгох ёстой
+                  if (product.sizes && product.sizes.length > 0) {
+                    if (!selectedSize || selectedSize.quantity === 0) {
+                      toast.error('Size сонгоно уу!');
+                      return;
+                    }
+                    // Сагсанд нэмээд шууд order хуудас руу
+                    const productWithStock = {
+                      ...product,
+                      availableStock: selectedSize.quantity,
+                      sizes: product.sizes
+                    };
+                    addToCart(productWithStock, selectedSize.size, selectedQuantity);
+                    router.push('/order');
+                  } else {
+                    // Size байхгүй бол шууд нэмээд order руу
+                    const productWithStock = {
+                      ...product,
+                      availableStock: product.quantity || 999
+                    };
+                    addToCart(productWithStock, undefined, selectedQuantity);
+                    router.push('/order');
+                  }
+                }}
+                disabled={product?.sizes && product.sizes.length > 0 && (!selectedSize || selectedSize.quantity === 0)}
+              >
+                <Zap />
+                Шууд захиалах ({selectedQuantity}x)
+              </Button>
+              
+              {/* Size сонгох анхааруулга */}
+              {product?.sizes && product.sizes.length > 0 && !selectedSize && (
+                <p className="text-sm text-red-600 mt-2 text-center">
+                  ⚠️ Size сонгоно уу
+                </p>
+              )}
             </div>
 
             <Separator className="my-6" />

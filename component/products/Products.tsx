@@ -27,6 +27,10 @@ type Product = {
   imgCover?: string;
   images?: string[];
   category?: string | Category;
+  sizes?: Array<{
+    size: string;
+    quantity: number;
+  }>;
 };
 
 // Бүтээгдэхүүний жагсаалт хуудас - Шүүлт, эрэмбэлэлт, сагс
@@ -203,22 +207,8 @@ export const Products = () => {
                     {displayProducts.map((product, index) => {
                       const discount = calculateDiscount(product.price, product.priceAfterDiscount);
                       return (
-                        <Card key={product._id} className="overflow-hidden group p-0 gap-0">
+                        <Card key={product._id} className="overflow-hidden group p-0 gap-0 cursor-pointer hover:shadow-lg transition-shadow">
                           <CardContent className="relative w-full h-64 overflow-hidden p-0">
-                            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                              <Button 
-                                size="sm"
-                                variant={isInCart(product._id) ? "secondary" : "default"}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  addToCart(product);
-                                }}
-                              >
-                                <ShoppingBag />
-                                {isInCart(product._id) ? 'Сагсанд' : 'Нэмэх'}
-                              </Button>
-                            </div>
                             <Link href={`/product-details?id=${product._id}`}>
                               <Image
                                 src={getImageSrc(product.imgCover, product.images, index)}

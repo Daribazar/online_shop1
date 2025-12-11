@@ -91,10 +91,14 @@ export default function Header() {
               onClick={() => setCartOpen(true)}
               className="hover:text-blue-500 transition relative"
               title="Сагс"
+              suppressHydrationWarning
             >
               <ShoppingBag size={22} />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+              {mounted && totalItems > 0 && (
+                <span 
+                  className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                  suppressHydrationWarning
+                >
                   {totalItems}
                 </span>
               )}

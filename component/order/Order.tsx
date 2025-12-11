@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
-import { ShoppingCart, MapPin, CheckCircle, Package, User } from "lucide-react";
+import { ShoppingCart, MapPin, CheckCircle, Package, User, CreditCard, Copy } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/lib/authContext";
+import { useCart } from "@/lib/cartContext";
+import { API_URL } from "@/lib/api";
 
 // Сагсны бүтээгдэхүүний төрөл
 type CartItem = {
@@ -37,101 +39,63 @@ type ShippingAddress = {
   phone: string;
 };
 
-// Захиалгын хуудас - Энгийн хувилбар
+// Банкны мэдээлэл
+type BankDetails = {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  transactionId: string;
+};
+
+// Захиалгын хариу
+type OrderResponse = {
+  _id: string;
+  transactionId: string;
+  totalOrderPrice: number;
+  createdAt: string;
+};
+
+// Захиалгын хуудас - Банкны шилжүүлгээтэй
 export const OrderPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const cartId = searchParams.get("cartId");
   const { user, isAuthenticated } = useAuth();
+  const { cart: localCart, clearCart } = useCart();
 
   // State
-  const [cart, setCart] = useState<Cart | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
-  const [checkoutAsGuest, setCheckoutAsGuest] = useState(!isAuthenticated);
+  const [orderResponse, setOrderResponse] = useState<OrderResponse | null>(null);
+  const [bankDetails, setBankDetails] = useState<BankDetails | null>(null);
+  const [orderedItems, setOrderedItems] = useState<typeof localCart>([]);
   
-  // Хаягийн мэдээлэл
+  // Form data
+  const [email, setEmail] = useState(user?.email || "");
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
     street: "",
     city: "",
     phone: "",
   });
+  const [additionalNotes, setAdditionalNotes] = useState("");
 
   // Алдааны мессеж
   const [error, setError] = useState<string>("");
 
   // Хэрэв хэрэглэгч нэвтэрсэн бол хаягийг автоматаар дүүргэх
   useEffect(() => {
-    if (isAuthenticated && user && user.addresses && user.addresses.length > 0) {
-      const firstAddress = user.addresses[0];
-      setShippingAddress({
-        street: firstAddress.street || "",
-        city: firstAddress.city || "",
-        phone: firstAddress.phone || "",
-      });
+    if (isAuthenticated && user) {
+      setEmail(user.email || "");
+      if (user.addresses && user.addresses.length > 0) {
+        const firstAddress = user.addresses[0];
+        setShippingAddress({
+          street: firstAddress.street || "",
+          city: firstAddress.city || "",
+          phone: firstAddress.phone || "",
+        });
+      }
     }
   }, [isAuthenticated, user]);
-
-  // Сагсны мэдээлэл татах
-  useEffect(() => {
-    if (!cartId) {
-      setError("Cart ID not found");
-      setLoading(false);
-      return;
-    }
-
-    fetchCartDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cartId]);
-
-  // Сагсны дэлгэрэнгүй мэдээлэл авах (жишээ - бодит backend-тэй холбох хэрэгтэй)
-  const fetchCartDetails = async () => {
-    try {
-      // Жишээ өгөгдөл - Бодит байдалд API дуудах
-      // const response = await fetch(`${API_URL}/carts/${cartId}`);
-      // const data = await response.json();
-      
-      // Demo өгөгдөл:
-      const demoCart = {
-        _id: cartId || "demo-cart-123",
-        userId: "demo-user",
-        cartItem: [
-          {
-            productId: {
-              _id: "1",
-              title: "Sample Product 1",
-              price: 99.99,
-              imgCover: "/assets/images/featured-products/01.webp"
-            },
-            quantity: 2,
-            price: 99.99,
-            totalProductDiscount: 10
-          },
-          {
-            productId: {
-              _id: "2",
-              title: "Sample Product 2",
-              price: 149.99,
-              imgCover: "/assets/images/featured-products/02.webp"
-            },
-            quantity: 1,
-            price: 149.99,
-            totalProductDiscount: 0
-          }
-        ],
-        totalPrice: 349.97,
-        discount: 10,
-        totalPriceAfterDiscount: 339.97
-      };
-      
-      setCart(demoCart);
-      setLoading(false);
-    } catch (err) {
-      setError("Failed to load cart details");
-      setLoading(false);
-    }
-  };
 
   // Input өөрчлөгдөх
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -143,11 +107,27 @@ export const OrderPage = () => {
 
   // Захиалга үүсгэх
   const handleSubmitOrder = async () => {
-    if (!cartId) return;
+    // Validation
+    if (localCart.length === 0) {
+      setError("Таны сагс хоосон байна");
+      return;
+    }
 
-    // Хаягийн validation
-    if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.phone) {
-      setError("Please fill in all shipping address fields");
+    if (!email || !shippingAddress.street || !shippingAddress.city || !shippingAddress.phone) {
+      setError("Бүх шаардлагатай талбаруудыг бөглөнө үү");
+      return;
+    }
+
+    // Email validation
+    if (!email.includes('@') || !email.includes('.')) {
+      setError("Зөв email хаяг оруулна уу");
+      return;
+    }
+
+    // Phone validation (Монголын утасны дугаар: 8 оронтой)
+    const phoneDigits = shippingAddress.phone.replace(/\D/g, '');
+    if (phoneDigits.length < 8) {
+      setError("Утасны дугаар багадаа 8 оронтой байх ёстой");
       return;
     }
 
@@ -155,22 +135,71 @@ export const OrderPage = () => {
     setError("");
 
     try {
-      // Жишээ - Бодит API дуудах хэрэгтэй
-      console.log("Creating order with:", {
-        cartId,
-        shippingAddress,
+      // CartItems бэлтгэх (selectedSize оруулах)
+      const cartItems = localCart.map(item => ({
+        productId: item._id,
+        quantity: item.quantity,
+        price: item.priceAfterDiscount || item.price,
+        totalProductDiscount: item.priceAfterDiscount 
+          ? (item.price - item.priceAfterDiscount) * item.quantity 
+          : 0,
+        selectedSize: item.selectedSize || null // Сонгосон size (байвал)
+      }));
+
+      // Нийт үнэ тооцоолох
+      const totalOrderPrice = localCart.reduce((sum, item) => {
+        const price = item.priceAfterDiscount || item.price;
+        return sum + (price * item.quantity);
+      }, 0);
+
+      // API дуудах
+      const response = await fetch(`${API_URL}/orders/bank-transfer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cartItems,
+          totalOrderPrice,
+          shippingAddress,
+          additionalNotes,
+          guestInfo: !isAuthenticated ? {
+            email,
+            phone: shippingAddress.phone,
+            name: 'Guest Customer'
+          } : null
+        }),
       });
 
-      // Demo - 2 секунд хүлээх
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const data = await response.json();
 
-      // Амжилттай
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to create order');
+      }
+
+      // Амжилттай - Банкны мэдээлэл хадгалах
+      setOrderResponse(data.order);
+      setBankDetails(data.bankDetails);
+      
+      // Захиалсан бүтээгдэхүүнүүдийг хадгалах (clearCart() хийхээс өмнө!)
+      setOrderedItems([...localCart]);
+      
       setOrderSuccess(true);
       
-      // 3 секундын дараа нүүр хуудас руу
-      setTimeout(() => {
-        router.push("/");
-      }, 3000);
+      // Guest бол Transaction ID хадгалах (дараа нь захиалга хянахад хялбар болгох)
+      if (!isAuthenticated) {
+        const guestOrders = JSON.parse(localStorage.getItem("guestOrders") || "[]");
+        guestOrders.push({
+          transactionId: data.order.transactionId,
+          date: data.order.createdAt,
+          total: data.order.totalOrderPrice,
+          email: email
+        });
+        localStorage.setItem("guestOrders", JSON.stringify(guestOrders));
+      }
+      
+      // Сагс цэвэрлэх (бүтээгдэхүүнүүдийг аль хэдийн orderedItems-д хадгалсан)
+      clearCart();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create order");
     } finally {
@@ -180,8 +209,10 @@ export const OrderPage = () => {
 
   // Нийт үнэ
   const getTotalPrice = () => {
-    if (!cart) return 0;
-    return cart.totalPriceAfterDiscount || cart.totalPrice;
+    return localCart.reduce((sum, item) => {
+      const price = item.priceAfterDiscount || item.price;
+      return sum + (price * item.quantity);
+    }, 0);
   };
 
   // Зургийн эх сурвалж
@@ -201,31 +232,167 @@ export const OrderPage = () => {
     );
   }
 
-  // Захиалга амжилттай
-  if (orderSuccess) {
+  // Захиалга амжилттай - Банкны мэдээлэл харуулах
+  if (orderSuccess && bankDetails) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-green-50">
-        <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
-          <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-4" />
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Order Successful!</h2>
-          <p className="text-gray-600 mb-4">Your order has been placed successfully.</p>
-          <p className="text-sm text-gray-500">Redirecting to home page...</p>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="text-center mb-6">
+              <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-4" />
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Захиалга амжилттай!</h2>
+              <p className="text-gray-600">Та доорх дансруу мөнгө шилжүүлнэ үү</p>
+            </div>
+
+            {/* Банкны мэдээлэл */}
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mb-6">
+              <div className="flex items-center gap-3 mb-4">
+                <CreditCard className="w-6 h-6 text-blue-600" />
+                <h3 className="text-xl font-bold text-blue-900">Банкны мэдээлэл</h3>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-700 font-medium">Банк:</span>
+                  <span className="font-bold">{bankDetails.bankName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-700 font-medium">Дансны дугаар:</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold font-mono">{bankDetails.accountNumber}</span>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(bankDetails.accountNumber)}
+                      className="p-1 hover:bg-blue-200 rounded"
+                      title="Хуулах"
+                    >
+                      <Copy size={16} />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-700 font-medium">Дансны нэр:</span>
+                  <span className="font-bold">{bankDetails.accountName}</span>
+                </div>
+                <div className="border-t-2 border-blue-300 pt-3 mt-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700 font-medium">Гүйлгээний дугаар:</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-lg text-blue-600 font-mono">{bankDetails.transactionId}</span>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(bankDetails.transactionId)}
+                        className="p-1 hover:bg-blue-200 rounded"
+                        title="Хуулах"
+                      >
+                        <Copy size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-red-600 mt-2 font-semibold">
+                    ⚠️ Заавал гүйлгээний дугаараа гүйлгээний утганд бичнэ үү!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Захиалсан бүтээгдэхүүнүүд */}
+            <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+              <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <Package size={20} />
+                Захиалсан бүтээгдэхүүн ({orderedItems.length})
+              </h4>
+              <div className="space-y-3 max-h-60 overflow-y-auto">
+                {orderedItems.map((item) => {
+                  const price = item.priceAfterDiscount || item.price;
+                  return (
+                    <div key={item._id} className="flex gap-3 pb-3 border-b last:border-b-0">
+                      <div className="relative w-16 h-16 shrink-0 bg-gray-100 rounded">
+                        <Image
+                          src={getImageSrc(item.imgCover || item.images?.[0])}
+                          alt={item.title}
+                          fill
+                          className="object-cover rounded"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm line-clamp-2">
+                          {item.title}
+                        </p>
+                        {item.selectedSize && (
+                          <p className="text-xs text-blue-600 mb-1">
+                            Size: <span className="font-semibold bg-blue-50 px-2 py-0.5 rounded">{item.selectedSize}</span>
+                          </p>
+                        )}
+                        <p className="text-sm text-gray-600">
+                          Тоо: {item.quantity} × ${price.toFixed(2)}
+                        </p>
+                        <p className="font-bold text-sm text-blue-600">
+                          ${(item.quantity * price).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Захиалгын дүн */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+              <div className="flex justify-between text-xl font-bold">
+                <span>Нийт төлөх дүн:</span>
+                <span className="text-blue-600">${orderResponse?.totalOrderPrice.toFixed(2)}</span>
+              </div>
+            </div>
+
+            {/* Заавар */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <h4 className="font-bold text-yellow-900 mb-2">📝 Төлбөрийн заавар:</h4>
+              <ol className="list-decimal list-inside space-y-1 text-sm text-yellow-800">
+                <li>Дээрх дансны дугаар руу мөнгө шилжүүлнэ</li>
+                <li>Гүйлгээний утганд <strong>{bankDetails.transactionId}</strong> гэж заавал бичнэ</li>
+                <li>Төлбөр баталгаажих хүртэл 1-2 цаг хүлээнэ</li>
+                <li>Transaction ID-ээ хадгалаад авна (захиалга шалгахад хэрэгтэй)</li>
+              </ol>
+            </div>
+
+            {/* Товчнууд */}
+            <div className="flex gap-4">
+              <button
+                onClick={() => router.push(`/order-track?txn=${bankDetails.transactionId}`)}
+                className="flex-1 bg-blue-600 text-white py-3 rounded font-semibold hover:bg-blue-700 transition"
+              >
+                Захиалга хянах
+              </button>
+              <button
+                onClick={() => router.push("/")}
+                className="flex-1 bg-gray-200 text-gray-800 py-3 rounded font-semibold hover:bg-gray-300 transition"
+              >
+                Нүүр хуудас
+              </button>
+            </div>
+
+            {/* Transaction ID хадгалах сануулга */}
+            <p className="text-center text-xs text-gray-500 mt-4">
+              Transaction ID: <span className="font-mono font-bold">{bankDetails.transactionId}</span>
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Алдаа
-  if (error && !cart) {
+  // Сагс хоосон бол
+  if (localCart.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
-          <p className="text-red-600 text-xl mb-4">{error}</p>
+          <ShoppingCart className="w-20 h-20 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Таны сагс хоосон байна</h2>
+          <p className="text-gray-600 mb-4">Эхлээд бүтээгдэхүүн нэмнэ үү</p>
           <button
-            onClick={() => router.push("/")}
-            className="bg-gray-900 text-white px-6 py-2 rounded hover:bg-gray-800"
+            onClick={() => router.push("/products")}
+            className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
           >
-            Go Home
+            Бүтээгдэхүүн үзэх
           </button>
         </div>
       </div>
@@ -288,6 +455,20 @@ export const OrderPage = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Street Address *
                   </label>
                   <input
@@ -330,6 +511,19 @@ export const OrderPage = () => {
                     required
                   />
                 </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Нэмэлт тэмдэглэл
+                  </label>
+                  <textarea
+                    value={additionalNotes}
+                    onChange={(e) => setAdditionalNotes(e.target.value)}
+                    placeholder="Хүргэлтийн нэмэлт тэмдэглэл (сонголттой)"
+                    className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    rows={3}
+                  />
+                </div>
               </div>
 
               {/* Алдааны мессеж */}
@@ -351,52 +545,50 @@ export const OrderPage = () => {
               <div className="border-b border-gray-200 mb-4" />
 
               {/* Бүтээгдэхүүний жагсаалт */}
-              {cart && cart.cartItem && cart.cartItem.length > 0 ? (
+              {localCart.length > 0 ? (
                 <div className="space-y-3 mb-4 max-h-96 overflow-y-auto">
-                  {cart.cartItem.map((item, index) => (
-                    <div key={index} className="flex gap-3 pb-3 border-b last:border-b-0">
-                      <div className="relative w-16 h-16 flex-shrink-0 bg-gray-100 rounded">
-                        <Image
-                          src={getImageSrc(item.productId?.imgCover)}
-                          alt={item.productId?.title || "Product"}
-                          fill
-                          className="object-cover rounded"
-                        />
-                      </div>
+                  {localCart.map((item) => {
+                    const price = item.priceAfterDiscount || item.price;
+                    return (
+                      <div key={item._id} className="flex gap-3 pb-3 border-b last:border-b-0">
+                        <div className="relative w-16 h-16 shrink-0 bg-gray-100 rounded">
+                          <Image
+                            src={getImageSrc(item.imgCover || item.images?.[0])}
+                            alt={item.title}
+                            fill
+                            className="object-cover rounded"
+                          />
+                        </div>
                       <div className="flex-1">
                         <p className="font-semibold text-sm line-clamp-2">
-                          {item.productId?.title || "Product"}
+                          {item.title}
                         </p>
+                        {item.selectedSize && (
+                          <p className="text-xs text-blue-600 mb-1">
+                            Size: <span className="font-semibold bg-blue-50 px-2 py-0.5 rounded">{item.selectedSize}</span>
+                          </p>
+                        )}
                         <p className="text-sm text-gray-600">
-                          Qty: {item.quantity} × ${item.price}
+                          Тоо: {item.quantity} × ${price.toFixed(2)}
                         </p>
                         <p className="font-bold text-sm">
-                          ${(item.quantity * item.price).toFixed(2)}
+                          ${(item.quantity * price).toFixed(2)}
                         </p>
                       </div>
-                    </div>
-                  ))}
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
-                <p className="text-gray-500 mb-4">No items in cart</p>
+                <p className="text-gray-500 mb-4">Сагс хоосон байна</p>
               )}
 
               {/* Үнийн дүн */}
               <div className="space-y-2 mb-6 pt-4 border-t">
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal:</span>
-                  <span className="font-semibold">${cart?.totalPrice.toFixed(2)}</span>
-                </div>
-                {cart?.discount && cart.discount > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
-                    <span>Discount:</span>
-                    <span>-${cart.discount.toFixed(2)}</span>
-                  </div>
-                )}
                 <div className="border-t pt-2 mt-2">
                   <div className="flex justify-between text-lg font-bold">
-                    <span>Total:</span>
-                    <span>${getTotalPrice().toFixed(2)}</span>
+                    <span>Нийт дүн:</span>
+                    <span className="text-blue-600">${getTotalPrice().toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -404,24 +596,24 @@ export const OrderPage = () => {
               {/* Захиалга батлах товч */}
               <button
                 onClick={handleSubmitOrder}
-                disabled={submitting || !cart}
-                className="w-full bg-gray-900 text-white py-3 rounded font-semibold hover:bg-gray-800 transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                disabled={submitting || localCart.length === 0}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Processing...</span>
+                    <span>Захиалга үүсгэж байна...</span>
                   </>
                 ) : (
                   <>
-                    <Package className="w-5 h-5" />
-                    <span>Place Order - ${getTotalPrice().toFixed(2)}</span>
+                    <CreditCard className="w-5 h-5" />
+                    <span>Захиалах - ${getTotalPrice().toFixed(2)}</span>
                   </>
                 )}
               </button>
 
               <p className="text-xs text-gray-500 text-center mt-3">
-                By placing your order, you agree to our terms
+                Банкны шилжүүлгээр төлбөр төлнө
               </p>
             </div>
           </div>

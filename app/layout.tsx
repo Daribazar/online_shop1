@@ -6,6 +6,7 @@ import Footer from "../component/footer";
 import { CartProvider } from "@/lib/cartContext";
 import { AuthProvider } from "@/lib/authContext";
 import NextTopLoader from 'nextjs-toploader';
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
         />
         <AuthProvider>
           <CartProvider>
+            <Toaster position="top-right" richColors closeButton />
             <Header />
             <main className="pt-20">
               {children}

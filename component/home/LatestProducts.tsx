@@ -26,6 +26,10 @@ type Product = {
   ratingsAverage?: number;
   priceAfterDiscount?: number;
   category?: string | Category;
+  sizes?: Array<{
+    size: string;
+    quantity: number;
+  }>;
 };
 
 const fallbackImages = [
@@ -158,7 +162,7 @@ export default function LatestProducts() {
                     delay: index * 0.05
                   }}
                 >
-                <Card className="overflow-hidden group relative p-0 gap-0">
+                <Card className="overflow-hidden group relative p-0 gap-0 cursor-pointer hover:shadow-xl transition-shadow">
                   {product.priceAfterDiscount && (
                     <Badge variant="destructive" className="absolute top-2 left-2 z-10">
                       Sale
@@ -166,19 +170,6 @@ export default function LatestProducts() {
                   )}
                   
                   <CardContent className="relative w-full h-80 overflow-hidden p-0">
-                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <Button 
-                        size="sm"
-                        variant={isInCart(product._id) ? "secondary" : "default"}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          addToCart(product);
-                        }}
-                      >
-                        <ShoppingBag />
-                        {isInCart(product._id) ? 'Сагсанд' : 'Нэмэх'}
-                      </Button>
-                    </div>
                     <Link href={`/product-details?id=${product._id}`}>
                       <Image
                         src={getImageSrc(product.imgCover, product.images, index)}

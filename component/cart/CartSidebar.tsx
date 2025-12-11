@@ -49,8 +49,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             <div className="space-y-4 pr-2">
               {cart.map((item, index) => {
                 const itemPrice = item.priceAfterDiscount || item.price;
+                const cartKey = item.selectedSize ? `${item._id}-${item.selectedSize}` : item._id;
                 return (
-                  <div key={item._id}>
+                  <div key={cartKey}>
                     <div className="flex items-start gap-3 p-2">
                       <Link href={`/product-details?id=${item._id}`} className="shrink-0">
                         <Image
@@ -67,6 +68,12 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                             {item.title}
                           </h6>
                         </Link>
+                        {/* Size харуулах */}
+                        {item.selectedSize && (
+                          <p className="text-xs text-gray-600 mb-1">
+                            Size: <span className="font-semibold bg-gray-100 px-2 py-0.5 rounded">{item.selectedSize}</span>
+                          </p>
+                        )}
                         <div className="flex items-center gap-2 mb-2">
                           {item.priceAfterDiscount ? (
                             <>
@@ -80,7 +87,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         {/* Quantity Controls */}
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item._id, item.quantity - 1, item.selectedSize)}
                             className="p-1 rounded border hover:bg-gray-100 transition"
                             aria-label="Багасгах"
                           >
@@ -88,7 +95,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                           </button>
                           <span className="w-8 text-center font-medium">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item._id, item.quantity + 1, item.selectedSize)}
                             className="p-1 rounded border hover:bg-gray-100 transition"
                             aria-label="Нэмэх"
                           >
@@ -100,7 +107,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         </p>
                       </div>
                       <button
-                        onClick={() => removeFromCart(item._id)}
+                        onClick={() => removeFromCart(item._id, item.selectedSize)}
                         className="text-gray-400 hover:text-red-600 transition shrink-0"
                         aria-label="Устгах"
                       >

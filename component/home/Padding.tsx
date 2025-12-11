@@ -22,6 +22,10 @@ type Product = {
   images?: string[];
   ratingsAverage?: number;
   priceAfterDiscount?: number;
+  sizes?: Array<{
+    size: string;
+    quantity: number;
+  }>;
 };
 
 const fallbackImages = [
@@ -138,23 +142,8 @@ export default function Padding() {
                 className="block"
                 aria-label={`${product.title} бүтээгдэхүүний дэлгэрэнгүй`}
               >
-                <Card className="overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-0 gap-0">
+                <Card className="overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-0 gap-0 cursor-pointer">
                   <CardContent className="relative w-full h-80 overflow-hidden p-0">
-                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <Button 
-                        size="sm"
-                        variant={isInCart(product._id) ? "secondary" : "default"}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          addToCart(product);
-                        }}
-                        aria-label={isInCart(product._id) ? `${product.title} сагсанд байна` : `${product.title}-г сагсанд нэмэх`}
-                      >
-                        <ShoppingBag className="md:mr-1" />
-                        <span className="hidden md:inline">{isInCart(product._id) ? 'Сагсанд' : 'Нэмэх'}</span>
-                      </Button>
-                    </div>
                     <Image
                       src={getImageSrc(product.imgCover, product.images, index)}
                       fill

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Upload, X, LogOut } from "lucide-react";
+import { Upload, X, LogOut, CheckCircle } from "lucide-react";
 import { API_URL } from "@/lib/api";
 
 // Tab төрөл - category эсвэл product
@@ -87,16 +87,25 @@ export const Admin = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            aria-label="Системээс гарах"
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-          >
-            <LogOut size={20} aria-hidden="true" />
-            Гарах
-          </button>
+          <div className="flex gap-3">
+            <a
+              href="/admin/verify-payments"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              <CheckCircle size={20} />
+              Төлбөр батлах
+            </a>
+            <button
+              onClick={handleLogout}
+              aria-label="Системээс гарах"
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              <LogOut size={20} aria-hidden="true" />
+              Гарах
+            </button>
+          </div>
         </div>
         
         <div className="flex flex-col lg:flex-row gap-6">

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { User, LogOut, MapPin, Mail, Lock, UserCircle } from "lucide-react";
+import { User, LogOut, MapPin, Mail, Lock, UserCircle, Package, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   Sheet,
   SheetContent,
@@ -17,6 +18,7 @@ interface ProfileSidebarProps {
 }
 
 export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps) {
+  const router = useRouter();
   const { user, isAuthenticated, isGuest, login, logout, continueAsGuest } = useAuth();
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
 
@@ -144,13 +146,37 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
             </div>
 
             <div className="py-6 space-y-4">
+              {/* Миний захиалгууд товч */}
+              <button
+                onClick={() => {
+                  router.push("/my-orders");
+                  onClose();
+                }}
+                className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition font-semibold flex items-center justify-center gap-2"
+              >
+                <Package size={20} />
+                Миний захиалгууд
+              </button>
+
+              {/* Захиалга хянах товч */}
+              <button
+                onClick={() => {
+                  router.push("/order-track");
+                  onClose();
+                }}
+                className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2"
+              >
+                <Search size={20} />
+                Захиалга хянах
+              </button>
+
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <p className="text-sm text-yellow-800 mb-3 font-semibold">
                   You&apos;re currently browsing as a guest. Create an account to:
                 </p>
                 <ul className="text-sm text-yellow-700 space-y-1 ml-4">
                   <li>• Save your addresses</li>
-                  <li>• Track your orders</li>
+                  <li>• Track your orders easily</li>
                   <li>• Faster checkout</li>
                   <li>• Save wishlist items</li>
                 </ul>
@@ -198,6 +224,30 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
             </div>
 
             <div className="py-4 space-y-4">
+              {/* Миний захиалгууд товч */}
+              <button
+                onClick={() => {
+                  router.push("/my-orders");
+                  onClose();
+                }}
+                className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition font-semibold flex items-center justify-center gap-2"
+              >
+                <Package size={20} />
+                Миний захиалгууд
+              </button>
+
+              {/* Захиалга хянах товч */}
+              <button
+                onClick={() => {
+                  router.push("/order-track");
+                  onClose();
+                }}
+                className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2"
+              >
+                <Search size={20} />
+                Захиалга хянах
+              </button>
+
               <div className="flex items-center gap-3 text-gray-700">
                 <UserCircle size={20} />
                 <span>Role: {user.role}</span>
@@ -370,13 +420,28 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
               </form>
             )}
 
-            <div className="mt-6 text-center text-sm text-gray-500">
-              <p>Or continue as</p>
+            {/* Quick Actions */}
+            <div className="mt-6 space-y-3">
+              <div className="text-center text-sm text-gray-500">
+                <p className="mb-3">Quick Actions</p>
+              </div>
+              
               <button
                 onClick={handleContinueAsGuest}
-                className="text-blue-600 hover:text-blue-800 font-semibold mt-1"
+                className="w-full bg-gray-100 text-gray-800 py-2 rounded-md hover:bg-gray-200 transition font-medium"
               >
-                Guest User
+                Continue as Guest
+              </button>
+              
+              <button
+                onClick={() => {
+                  router.push("/order-track");
+                  onClose();
+                }}
+                className="w-full bg-blue-50 text-blue-700 py-2 rounded-md hover:bg-blue-100 transition font-medium flex items-center justify-center gap-2 border border-blue-200"
+              >
+                <Search size={18} />
+                Захиалга хянах
               </button>
             </div>
           </div>
