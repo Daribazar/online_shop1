@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Search, Heart, User } from 'lucide-react';
+import { Menu, X, Search, ShoppingBag, User } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import WishlistSidebar from './wishlist/WishlistSidebar';
+import CartSidebar from './cart/CartSidebar';
 import SearchSidebar from './search/SearchSidebar';
 import ProfileSidebar from './profile/ProfileSidebar';
 import { useScrollDirection } from '@/lib/useScrollDirection';
 import { useAuth } from '@/lib/authContext';
+import { useCart } from '@/lib/cartContext';
 
 const mobileMenuItems = [
   { label: "Home", href: "/" },
@@ -20,12 +21,13 @@ const mobileMenuItems = [
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const scrollDirection = useScrollDirection();
   const { isAuthenticated, isGuest } = useAuth();
+  const { totalItems } = useCart();
 
   // Prevent hydration mismatch by only showing auth-dependent UI after mount
   useEffect(() => {
@@ -86,10 +88,16 @@ export default function Header() {
               <Search size={22} />
             </button>
             <button 
-              onClick={() => setWishlistOpen(true)}
-              className="hover:text-red-500 transition"
+              onClick={() => setCartOpen(true)}
+              className="hover:text-blue-500 transition relative"
+              title="Сагс"
             >
-              <Heart size={22} />
+              <ShoppingBag size={22} />
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                  {totalItems}
+                </span>
+              )}
             </button>
             <button 
               onClick={() => setProfileOpen(true)}
@@ -159,7 +167,7 @@ export default function Header() {
       </AnimatePresence>
       
       <SearchSidebar isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
-      <WishlistSidebar isOpen={wishlistOpen} onClose={() => setWishlistOpen(false)} />
+      <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       <ProfileSidebar isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
     </header>
   );

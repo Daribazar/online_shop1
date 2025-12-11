@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
-import { useWishlist } from "@/lib/wishlistContext";
+import { ShoppingBag } from "lucide-react";
+import { useCart } from "@/lib/cartContext";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
 import { API_URL } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -34,7 +36,7 @@ const fallbackImages = [
 ];
 
 export default function Padding() {
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToCart, isInCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -133,31 +135,25 @@ export default function Padding() {
             <SwiperSlide key={product._id}>
               <Link 
                 href={`/product-details?id=${product._id}`} 
-                className="block focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg"
+                className="block"
                 aria-label={`${product.title} бүтээгдэхүүний дэлгэрэнгүй`}
               >
-                <div className="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                  <div className="relative w-full h-80 overflow-hidden">
-                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-2 md:py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <button 
+                <Card className="overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-0 gap-0">
+                  <CardContent className="relative w-full h-80 overflow-hidden p-0">
+                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <Button 
+                        size="sm"
+                        variant={isInCart(product._id) ? "secondary" : "default"}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          if (isInWishlist(product._id)) {
-                            removeFromWishlist(product._id);
-                          } else {
-                            addToWishlist(product);
-                          }
+                          addToCart(product);
                         }}
-                        aria-label={isInWishlist(product._id) ? `${product.title}-г wishlist-ээс хасах` : `${product.title}-г wishlist-д нэмэх`}
-                        className="p-2 hover:bg-red-100 rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                        aria-label={isInCart(product._id) ? `${product.title} сагсанд байна` : `${product.title}-г сагсанд нэмэх`}
                       >
-                        <Heart 
-                          size={18} 
-                          aria-hidden="true"
-                          className={`md:w-5 md:h-5 transition-all duration-200 ${isInWishlist(product._id) ? 'fill-red-500 text-red-500' : 'hover:fill-red-500 hover:text-red-500'}`} 
-                        />
-                      </button>
+                        <ShoppingBag className="md:mr-1" />
+                        <span className="hidden md:inline">{isInCart(product._id) ? 'Сагсанд' : 'Нэмэх'}</span>
+                      </Button>
                     </div>
                     <Image
                       src={getImageSrc(product.imgCover, product.images, index)}
@@ -166,10 +162,10 @@ export default function Padding() {
                       className="object-cover pointer-events-none group-hover:scale-105 transition-transform duration-300"
                       draggable={false}
                     />
-                  </div>
+                  </CardContent>
 
-                  <div className="p-3 md:p-4">
-                    <div className="text-center">
+                  <CardFooter className="flex-col gap-2 p-3 md:p-4">
+                    <div className="text-center w-full">
                       <h6 className="font-bold text-sm md:text-base mb-1 md:mb-2">{product.title}</h6>
                       <div className="flex justify-center gap-1 mb-1 md:mb-2 text-yellow-500" role="img" aria-label={`${Math.round(product.ratingsAverage || 5)} оноо 5-аас`}>
                         {[...Array(Math.round(product.ratingsAverage || 5))].map((_, i) => (
@@ -183,10 +179,10 @@ export default function Padding() {
                           </svg>
                         ))}
                       </div>
-                      <p className="text-base md:text-lg font-bold" aria-label={product.priceAfterDiscount ? `Хөнгөлөлттэй үнэ ${product.priceAfterDiscount} доллар, анхны үнэ ${product.price} доллар` : `Үнэ ${product.price} доллар`}>
+                      <p className="text-base md:text-lg font-bold">
                         {product.priceAfterDiscount ? (
                           <>
-                            <span className="line-through text-gray-400 mr-2" aria-hidden="true">${product.price}</span>
+                            <span className="line-through text-gray-400 mr-2">${product.price}</span>
                             <span className="text-red-600">${product.priceAfterDiscount}</span>
                           </>
                         ) : (
@@ -194,8 +190,8 @@ export default function Padding() {
                         )}
                       </p>
                     </div>
-                  </div>
-                </div>
+                  </CardFooter>
+                </Card>
               </Link>
             </SwiperSlide>
           ))}

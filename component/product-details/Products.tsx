@@ -3,11 +3,15 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { Heart } from "lucide-react";
-import { useWishlist } from "@/lib/wishlistContext";
+import { ShoppingBag } from "lucide-react";
+import { useCart } from "@/lib/cartContext";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { fetchProductById } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 // Category төрөл
 type Category = {
@@ -48,9 +52,9 @@ type ProductsProps = {
   onCategoryLoad?: (categoryId: string) => void;
 };
 
-// Бүтээгдэхүүний дэлгэрэнгүй хуудас - Зураг, мэдээлэл, wishlist
+// Бүтээгдэхүүний дэлгэрэнгүй хуудас - Зураг, мэдээлэл, сагс
 export default function Products({ onCategoryLoad }: ProductsProps) {
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToCart, isInCart } = useCart();
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');
   
@@ -172,7 +176,9 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
               {product.priceAfterDiscount && (
                 <>
                   <span className="text-xl text-gray-400 line-through">${product.price}</span>
-                  <span className="text-2xl font-bold text-red-600">({discount}% off)</span>
+                  <Badge variant="destructive" className="text-lg px-3 py-1">
+                    {discount}% OFF
+                  </Badge>
                 </>
               )}
             </div>
@@ -237,32 +243,23 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
               </div>
             )}
 
-            {/* Wishlist Button */}
+            {/* Add to Cart Button */}
             <div className="mt-6">
-              <button 
+              <Button 
+                size="lg"
+                className="w-full"
+                variant={product && isInCart(product._id) ? "secondary" : "default"}
                 onClick={() => {
                   if (!product) return;
-                  if (isInWishlist(product._id)) {
-                    removeFromWishlist(product._id);
-                  } else {
-                    addToWishlist(product);
-                  }
+                  addToCart(product);
                 }}
-                className={`w-full px-6 py-3 rounded-lg transition flex items-center justify-center gap-2 font-semibold ${
-                  product && isInWishlist(product._id)
-                    ? 'bg-red-500 text-white hover:bg-red-600'
-                    : 'bg-gray-900 text-white hover:bg-gray-800'
-                }`}
               >
-                <Heart 
-                  size={20} 
-                  className={product && isInWishlist(product._id) ? 'fill-white' : ''} 
-                />
-                {product && isInWishlist(product._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
-              </button>
+                <ShoppingBag />
+                {product && isInCart(product._id) ? 'Сагсанд байна' : 'Сагсанд нэмэх'}
+              </Button>
             </div>
 
-            <hr className="my-6" />
+            <Separator className="my-6" />
 
             {/* Product Details */}
             <div>
@@ -270,25 +267,25 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
               <div className="space-y-2 text-gray-600">
                 <p>{product.descripton}</p>
                 {product.category && (
-                  <p>
-                    <span className="font-semibold">Category:</span>{' '}
-                    <span className="font-bold text-gray-900">
+                  <p className="flex gap-2">
+                    <span className="font-semibold">Category:</span>
+                    <Badge variant="secondary">
                       {typeof product.category === 'string' ? product.category : product.category.name}
-                    </span>
+                    </Badge>
                   </p>
                 )}
                 {product.brand && (
-                  <p>
-                    <span className="font-semibold">Brand:</span>{' '}
-                    <span className="font-bold text-gray-900">
+                  <p className="flex gap-2">
+                    <span className="font-semibold">Brand:</span>
+                    <Badge variant="secondary">
                       {typeof product.brand === 'string' ? product.brand : product.brand.name}
-                    </span>
+                    </Badge>
                   </p>
                 )}
               </div>
             </div>
 
-            <hr className="my-6" />
+            <Separator className="my-6" />
           </div>
         </div>
       </div>

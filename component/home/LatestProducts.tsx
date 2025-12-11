@@ -3,11 +3,14 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import { fetchProducts, fetchCategories } from "@/lib/api";
-import { useWishlist } from "@/lib/wishlistContext";
+import { useCart } from "@/lib/cartContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 type Category = {
   _id: string;
@@ -37,7 +40,7 @@ const fallbackImages = [
 ];
 
 export default function LatestProducts() {
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToCart, isInCart } = useCart();
   const [activeTab, setActiveTab] = useState("all");
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -154,69 +157,65 @@ export default function LatestProducts() {
                     damping: 25,
                     delay: index * 0.05
                   }}
-                  className="bg-white rounded-lg shadow-md overflow-hidden group relative"
                 >
-                {product.priceAfterDiscount && (
-                  <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-3 py-1 rounded z-10">
-                    Sale
-                  </div>
-                )}
-                
-                <div className="relative w-full h-80 overflow-hidden">
-                  <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                    <button 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (isInWishlist(product._id)) {
-                          removeFromWishlist(product._id);
-                        } else {
-                          addToWishlist(product);
-                        }
-                      }}
-                      className="p-2 hover:bg-red-100 rounded-full transition"
-                    >
-                      <Heart 
-                        size={20} 
-                        className={`transition ${isInWishlist(product._id) ? 'fill-red-500 text-red-500' : 'hover:fill-red-500 hover:text-red-500'}`} 
-                      />
-                    </button>
-                  </div>
-                  <Link href={`/product-details?id=${product._id}`}>
-                    <Image
-                      src={getImageSrc(product.imgCover, product.images, index)}
-                      fill
-                      alt={product.title}
-                      className="object-cover"
-                    />
-                  </Link>
-                </div>
-
-                <div className="p-4">
-                  <div className="text-center">
-                    <h6 className="font-bold mb-2">{product.title}</h6>
-                    <div className="flex justify-center gap-1 mb-2 text-yellow-500">
-                      {[...Array(Math.round(product.ratingsAverage || 5))].map((_, i) => (
-                        <svg
-                          key={i}
-                          className="w-4 h-4 fill-current"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                        </svg>
-                      ))}
+                <Card className="overflow-hidden group relative p-0 gap-0">
+                  {product.priceAfterDiscount && (
+                    <Badge variant="destructive" className="absolute top-2 left-2 z-10">
+                      Sale
+                    </Badge>
+                  )}
+                  
+                  <CardContent className="relative w-full h-80 overflow-hidden p-0">
+                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <Button 
+                        size="sm"
+                        variant={isInCart(product._id) ? "secondary" : "default"}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          addToCart(product);
+                        }}
+                      >
+                        <ShoppingBag />
+                        {isInCart(product._id) ? 'Сагсанд' : 'Нэмэх'}
+                      </Button>
                     </div>
-                    <p className="text-lg font-bold">
-                      {product.priceAfterDiscount ? (
-                        <>
-                          <span className="line-through text-gray-400 mr-2">${product.price}</span>
-                          <span className="text-red-600">${product.priceAfterDiscount}</span>
-                        </>
-                      ) : (
-                        `$${product.price}`
-                      )}
-                    </p>
-                  </div>
-                </div>
+                    <Link href={`/product-details?id=${product._id}`}>
+                      <Image
+                        src={getImageSrc(product.imgCover, product.images, index)}
+                        fill
+                        alt={product.title}
+                        className="object-cover"
+                      />
+                    </Link>
+                  </CardContent>
+
+                  <CardFooter className="flex-col gap-2 p-4">
+                    <div className="text-center w-full">
+                      <h6 className="font-bold mb-2">{product.title}</h6>
+                      <div className="flex justify-center gap-1 mb-2 text-yellow-500">
+                        {[...Array(Math.round(product.ratingsAverage || 5))].map((_, i) => (
+                          <svg
+                            key={i}
+                            className="w-4 h-4 fill-current"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                          </svg>
+                        ))}
+                      </div>
+                      <p className="text-lg font-bold">
+                        {product.priceAfterDiscount ? (
+                          <>
+                            <span className="line-through text-gray-400 mr-2">${product.price}</span>
+                            <span className="text-red-600">${product.priceAfterDiscount}</span>
+                          </>
+                        ) : (
+                          `$${product.price}`
+                        )}
+                      </p>
+                    </div>
+                  </CardFooter>
+                </Card>
               </motion.div>
             ))}
             </motion.div>

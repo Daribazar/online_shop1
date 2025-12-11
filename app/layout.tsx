@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "../component/header";
 import Footer from "../component/footer";
-import { WishlistProvider } from "@/lib/wishlistContext";
+import { CartProvider } from "@/lib/cartContext";
 import { AuthProvider } from "@/lib/authContext";
 import NextTopLoader from 'nextjs-toploader';
 
@@ -43,13 +43,13 @@ export default function RootLayout({
           shadow="0 0 10px #ef4444,0 0 5px #ef4444"
         />
         <AuthProvider>
-          <WishlistProvider>
+          <CartProvider>
             <Header />
             <main className="pt-20">
               {children}
             </main>
             <Footer />
-          </WishlistProvider>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

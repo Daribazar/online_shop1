@@ -4,9 +4,12 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
-import { useWishlist } from "@/lib/wishlistContext";
+import { ShoppingBag } from "lucide-react";
+import { useCart } from "@/lib/cartContext";
 import { fetchProducts, fetchCategories } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 // Category төрөл
 type Category = {
@@ -26,9 +29,9 @@ type Product = {
   category?: string | Category;
 };
 
-// Бүтээгдэхүүний жагсаалт хуудас - Шүүлт, эрэмбэлэлт, wishlist
+// Бүтээгдэхүүний жагсаалт хуудас - Шүүлт, эрэмбэлэлт, сагс
 export const Products = () => {
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToCart, isInCart } = useCart();
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get("category");
   
@@ -200,26 +203,21 @@ export const Products = () => {
                     {displayProducts.map((product, index) => {
                       const discount = calculateDiscount(product.price, product.priceAfterDiscount);
                       return (
-                        <div key={product._id} className="border rounded-lg overflow-hidden group">
-                          <div className="relative w-full h-64 overflow-hidden">
-                            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 bg-white/90 py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                              <button 
+                        <Card key={product._id} className="overflow-hidden group p-0 gap-0">
+                          <CardContent className="relative w-full h-64 overflow-hidden p-0">
+                            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-2 bg-white/90 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                              <Button 
+                                size="sm"
+                                variant={isInCart(product._id) ? "secondary" : "default"}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  if (isInWishlist(product._id)) {
-                                    removeFromWishlist(product._id);
-                                  } else {
-                                    addToWishlist(product);
-                                  }
+                                  addToCart(product);
                                 }}
-                                className="p-2 hover:bg-red-100 rounded-full transition"
                               >
-                                <Heart 
-                                  size={18} 
-                                  className={`transition ${isInWishlist(product._id) ? 'fill-red-500 text-red-500' : 'hover:fill-red-500 hover:text-red-500'}`} 
-                                />
-                              </button>
+                                <ShoppingBag />
+                                {isInCart(product._id) ? 'Сагсанд' : 'Нэмэх'}
+                              </Button>
                             </div>
                             <Link href={`/product-details?id=${product._id}`}>
                               <Image
@@ -229,23 +227,25 @@ export const Products = () => {
                                 className="object-cover"
                               />
                             </Link>
-                          </div>
-                          <div className="p-3 border-t">
-                            <h5 className="font-bold text-sm mb-1">{product.title}</h5>
-                            <p className="text-xs text-gray-600 mb-2">{product.descripton}</p>
+                          </CardContent>
+                          <CardFooter className="flex flex-col items-start gap-2 p-3">
+                            <h5 className="font-bold text-sm line-clamp-1">{product.title}</h5>
+                            <p className="text-xs text-gray-600 line-clamp-2">{product.descripton}</p>
                             <div className="flex items-center gap-2 flex-wrap">
                               {product.priceAfterDiscount ? (
                                 <>
-                                  <span className="font-bold">${product.priceAfterDiscount}</span>
+                                  <span className="font-bold text-base">${product.priceAfterDiscount}</span>
                                   <span className="text-gray-400 line-through text-sm">${product.price}</span>
-                                  <span className="text-red-600 font-bold text-sm">({discount}% off)</span>
+                                  <Badge variant="destructive" className="text-xs">
+                                    {discount}% OFF
+                                  </Badge>
                                 </>
                               ) : (
-                                <span className="font-bold">${product.price}</span>
+                                <span className="font-bold text-base">${product.price}</span>
                               )}
                             </div>
-                          </div>
-                        </div>
+                          </CardFooter>
+                        </Card>
                       );
                     })}
                   </div>
