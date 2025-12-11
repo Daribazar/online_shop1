@@ -80,7 +80,7 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        throw new Error(data.message || data.error || "Нэвтрэхэд алдаа гарлаа");
       }
 
       const userData = {
@@ -121,7 +121,7 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Signup failed");
+        throw new Error(data.message || data.error || "Бүртгүүлэх үед алдаа гарлаа");
       }
 
       // Save for verification
@@ -137,7 +137,7 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
       setCurrentView("verify-email");
 
     } catch (err) {
-      setSignupError(err instanceof Error ? err.message : "Signup failed");
+      setSignupError(err instanceof Error ? err.message : "Бүртгүүлэх үед алдаа гарлаа");
     } finally {
       setSignupLoading(false);
     }
@@ -181,7 +181,7 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Verification failed");
+        throw new Error(data.message || data.error || "Баталгаажуулалт амжилтгүй");
       }
 
       // Login user
@@ -217,7 +217,7 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to resend code");
+        throw new Error(data.message || data.error || "Код дахин илгээхэд алдаа гарлаа");
       }
 
       setResendSuccess("Шинэ код таны email рүү илгээгдлээ!");
@@ -245,14 +245,14 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to send reset code");
+        throw new Error(data.message || data.error || "Код илгээхэд алдаа гарлаа");
       }
 
       setResetEmail(forgotEmail);
       setCurrentView("verify-reset-code");
 
     } catch (err) {
-      setForgotError(err instanceof Error ? err.message : "Failed");
+      setForgotError(err instanceof Error ? err.message : "Код илгээхэд алдаа гарлаа");
     } finally {
       setForgotLoading(false);
     }
@@ -296,7 +296,7 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Invalid code");
+        throw new Error(data.message || data.error || "Буруу код");
       }
 
       setCurrentView("reset-password");
@@ -330,7 +330,7 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to reset password");
+        throw new Error(data.message || data.error || "Нууц үг солихоо алдаа гарлаа");
       }
 
       // Auto-login

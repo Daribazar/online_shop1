@@ -36,25 +36,21 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 // Cart Provider - бүх компонентод сагс хүртээмжтэй болгоно
 export function CartProvider({ children }: { children: ReactNode }) {
-  // Hydration error-ийг шийдэх: эхэнд хоосон array-аар эхлүүлж, дараа нь localStorage-оос уншина
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  // Component mount болоход localStorage-оос уншина
-  useEffect(() => {
+  // Hydration error-ийг шийдэх: эхэнд хоосон array-аар эхлүүлж, client-д localStorage-оос уншина
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    // Server-side rendering үед localStorage байхгүй тул шалгах
+    if (typeof window === 'undefined') return [];
+    
     const saved = localStorage.getItem("cart");
-    if (saved) {
-      setCart(JSON.parse(saved));
-    }
-    setIsInitialized(true);
-  }, []);
+    return saved ? JSON.parse(saved) : [];
+  });
 
   // Сагс өөрчлөгдөх бүрт localStorage-д хадгална
   useEffect(() => {
-    if (isInitialized) {
+    if (typeof window !== 'undefined') {
       localStorage.setItem("cart", JSON.stringify(cart));
     }
-  }, [cart, isInitialized]);
+  }, [cart]);
 
   // Сагсанд бүтээгдэхүүн нэмэх (size-тай эсвэл үгүй, тоо ширхэгтэй)
   const addToCart = (item: Omit<CartItem, 'quantity'>, selectedSize?: string, quantity: number = 1) => {
@@ -67,94 +63,87 @@ export function CartProvider({ children }: { children: ReactNode }) {
       availableStock = item.availableStock || 999;
     }
 
-    setCart((prev) => {
-      // Size-тай бүтээгдэхүүн бол ID + Size-ийн хослолоор шалгах
-      const cartKey = selectedSize ? `${item._id}-${selectedSize}` : item._id;
-      const existingItem = prev.find((i) => {
-        const existingKey = i.selectedSize ? `${i._id}-${i.selectedSize}` : i._id;
-        return existingKey === cartKey;
-      });
-      
-      if (existingItem) {
-        // Нийт тоо ширхэг stock-аас хэтрэхгүй эсэхийг шалгах
-        const newQuantity = existingItem.quantity + quantity;
-        if (newQuantity > availableStock) {
-          toast.warning(`Уучлаарай! ${selectedSize ? 'Size ' + selectedSize : 'Энэ бүтээгдэхүүн'} ${availableStock} ширхэг л үлдсэн байна.`);
-          return prev;
-        }
-        
-        // Аль хэдийн сагсанд байвал тоо ширхгийг нэмэх
-        toast.success(`${item.title} ${selectedSize ? '(Size: ' + selectedSize + ')' : ''} (${quantity}x) сагсанд нэмэгдлээ!`);
-        return prev.map((i) => {
-          const existingKey = i.selectedSize ? `${i._id}-${i.selectedSize}` : i._id;
-          return existingKey === cartKey ? { ...i, quantity: newQuantity } : i;
-        });
-      }
-      
-      // Stock шалгах (шинэ бүтээгдэхүүн)
-      if (quantity > availableStock) {
-        toast.warning(`Уучлаарай! ${selectedSize ? 'Size ' + selectedSize : 'Энэ бүтээгдэхүүн'} ${availableStock} ширхэг л үлдсэн байна.`);
-        return prev;
-      }
-      
-      // Шинэ бүтээгдэхүүн нэмэх
-      toast.success(`${item.title} ${selectedSize ? '(Size: ' + selectedSize + ')' : ''} (${quantity}x) сагсанд нэмэгдлээ!`);
-      return [...prev, { ...item, quantity, selectedSize, availableStock }];
+    // Size-тай бүтээгдэхүүн бол ID + Size-ийн хослолоор шалгах
+    const cartKey = selectedSize ? `${item._id}-${selectedSize}` : item._id;
+    const existingItem = cart.find((i) => {
+      const existingKey = i.selectedSize ? `${i._id}-${i.selectedSize}` : i._id;
+      return existingKey === cartKey;
     });
+    
+    if (existingItem) {
+      // Нийт тоо ширхэг stock-аас хэтрэхгүй эсэхийг шалгах
+      const newQuantity = existingItem.quantity + quantity;
+      if (newQuantity > availableStock) {
+        toast.warning(`Уучлаарай! ${selectedSize ? 'Size ' + selectedSize : 'Энэ бүтээгдэхүүн'} ${availableStock} ширхэг л үлдсэн байна.`);
+        return;
+      }
+      
+      // Аль хэдийн сагсанд байвал тоо ширхгийг нэмэх
+      setCart((prev) => prev.map((i) => {
+        const existingKey = i.selectedSize ? `${i._id}-${i.selectedSize}` : i._id;
+        return existingKey === cartKey ? { ...i, quantity: newQuantity } : i;
+      }));
+      toast.success(`${item.title} ${selectedSize ? '(Size: ' + selectedSize + ')' : ''} (${quantity}x) сагсанд нэмэгдлээ!`);
+      return;
+    }
+    
+    // Stock шалгах (шинэ бүтээгдэхүүн)
+    if (quantity > availableStock) {
+      toast.warning(`Уучлаарай! ${selectedSize ? 'Size ' + selectedSize : 'Энэ бүтээгдэхүүн'} ${availableStock} ширхэг л үлдсэн байна.`);
+      return;
+    }
+    
+    // Шинэ бүтээгдэхүүн нэмэх
+    setCart((prev) => [...prev, { ...item, quantity, selectedSize, availableStock }]);
+    toast.success(`${item.title} ${selectedSize ? '(Size: ' + selectedSize + ')' : ''} (${quantity}x) сагсанд нэмэгдлээ!`);
   };
 
   // Сагснаас бүтээгдэхүүн хасах (size-тай эсвэл үгүй)
   const removeFromCart = (id: string, selectedSize?: string) => {
-    setCart((prev) => {
-      const item = prev.find((i) => {
-        if (selectedSize && i.selectedSize) {
-          return i._id === id && i.selectedSize === selectedSize;
-        }
-        return i._id === id;
-      });
-      
-      if (item) {
-        toast.info(`${item.title} ${selectedSize ? '(Size: ' + selectedSize + ')' : ''} хасагдлаа`);
+    const item = cart.find((i) => {
+      if (selectedSize && i.selectedSize) {
+        return i._id === id && i.selectedSize === selectedSize;
       }
-      
-      return prev.filter((item) => {
+      return i._id === id;
+    });
+    
+    if (item) {
+      setCart((prev) => prev.filter((item) => {
         if (selectedSize && item.selectedSize) {
           return !(item._id === id && item.selectedSize === selectedSize);
         }
         return item._id !== id;
-      });
-    });
+      }));
+      toast.info(`${item.title} ${selectedSize ? '(Size: ' + selectedSize + ')' : ''} хасагдлаа`);
+    }
   };
 
   // Бүтээгдэхүүний тоо ширхэг өөрчлөх
   const updateQuantity = (id: string, quantity: number, selectedSize?: string) => {
     if (quantity <= 0) {
       removeFromCart(id, selectedSize);
-      toast.info('Бүтээгдэхүүн сагснаас хасагдлаа');
       return;
     }
     
-    setCart((prev) => {
-      const item = prev.find((i) => {
-        if (selectedSize && i.selectedSize) {
-          return i._id === id && i.selectedSize === selectedSize;
-        }
-        return i._id === id;
-      });
-
-      // Stock шалгах
-      if (item && item.availableStock && quantity > item.availableStock) {
-        toast.warning(`Уучлаарай! ${selectedSize ? 'Size ' + selectedSize : 'Энэ бүтээгдэхүүн'} ${item.availableStock} ширхэг л үлдсэн байна.`);
-        return prev;
+    const item = cart.find((i) => {
+      if (selectedSize && i.selectedSize) {
+        return i._id === id && i.selectedSize === selectedSize;
       }
-
-      return prev.map((item) => {
-        if (selectedSize && item.selectedSize) {
-          return (item._id === id && item.selectedSize === selectedSize) ? { ...item, quantity } : item;
-        }
-        return item._id === id ? { ...item, quantity } : item;
-      });
+      return i._id === id;
     });
+
+    // Stock шалгах
+    if (item && item.availableStock && quantity > item.availableStock) {
+      toast.warning(`Уучлаарай! ${selectedSize ? 'Size ' + selectedSize : 'Энэ бүтээгдэхүүн'} ${item.availableStock} ширхэг л үлдсэн байна.`);
+      return;
+    }
+
+    setCart((prev) => prev.map((item) => {
+      if (selectedSize && item.selectedSize) {
+        return (item._id === id && item.selectedSize === selectedSize) ? { ...item, quantity } : item;
+      }
+      return item._id === id ? { ...item, quantity } : item;
+    }));
   };
 
   // Сагсыг хоослох
