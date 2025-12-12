@@ -163,6 +163,20 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
     }
   };
 
+  const handleVerificationPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    
+    if (pastedData.length === 6) {
+      const newCode = pastedData.split('');
+      setVerificationCode(newCode);
+      
+      // Focus on last input
+      const lastInput = document.getElementById(`verify-code-5`);
+      lastInput?.focus();
+    }
+  };
+
   // Handle Email Verification
   const handleVerifyEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -275,6 +289,20 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
     if (e.key === "Backspace" && !resetCode[index] && index > 0) {
       const prevInput = document.getElementById(`reset-code-${index - 1}`);
       prevInput?.focus();
+    }
+  };
+
+  const handleResetPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    
+    if (pastedData.length === 6) {
+      const newCode = pastedData.split('');
+      setResetCode(newCode);
+      
+      // Focus on last input
+      const lastInput = document.getElementById(`reset-code-5`);
+      lastInput?.focus();
     }
   };
 
@@ -420,6 +448,7 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
                     value={digit}
                     onChange={(e) => handleVerificationCodeChange(index, e.target.value)}
                     onKeyDown={(e) => handleVerificationKeyDown(index, e)}
+                    onPaste={handleVerificationPaste}
                     className="w-10 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                     required
                   />
@@ -547,6 +576,7 @@ export default function ProfileSidebar({ isOpen, onClose }: ProfileSidebarProps)
                     value={digit}
                     onChange={(e) => handleResetCodeChange(index, e.target.value)}
                     onKeyDown={(e) => handleResetKeyDown(index, e)}
+                    onPaste={handleResetPaste}
                     className="w-10 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
                     required
                   />
