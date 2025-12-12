@@ -27,9 +27,9 @@ export async function fetchCategories() {
 }
 
 // Бүх бүтээгдэхүүнүүдийг татаж авах
-export async function fetchProducts() {
+export async function fetchProducts(limit: number = 1000) {
   try {
-    const response = await fetch(`${API_URL}/products`);
+    const response = await fetch(`${API_URL}/products?limit=${limit}`);
     if (!response.ok) throw new Error('Failed to fetch products');
     const data = await response.json();
     return data.getAllProducts || [];

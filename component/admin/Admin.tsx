@@ -514,7 +514,8 @@ function ProductForm({ token }: { token: string }) {
   const loadProducts = async () => {
     setLoadingList(true);
     try {
-      const response = await fetch(`${API_URL}/products`);
+      // Бүх бүтээгдэхүүнүүдийг авахын тулд limit=1000 гэж өгнө
+      const response = await fetch(`${API_URL}/products?limit=1000`);
       const data = await response.json();
       setProducts(data.getAllProducts || []);
     } catch (error) {
@@ -662,6 +663,8 @@ function ProductForm({ token }: { token: string }) {
         body: data,
       });
 
+      const responseData = await response.json();
+      
       if (response.ok) {
         alert("Бүтээгдэхүүн амжилттай нэмэгдлээ!");
         setFormData({
@@ -687,10 +690,9 @@ function ProductForm({ token }: { token: string }) {
         setImages([]);
         setCoverPreview("");
         setImagePreviews([]);
-        loadProducts();
+        await loadProducts(); // Жагсаалтыг дахин ачаалах
       } else {
-        const errorData = await response.json();
-        alert(errorData.message || "Алдаа гарлаа!");
+        alert(responseData.message || responseData.error || "Алдаа гарлаа!");
       }
     } catch (error) {
       console.error("Error:", error);

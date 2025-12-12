@@ -3,12 +3,9 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import { fetchProducts, fetchCategories } from "@/lib/api";
-import { useCart } from "@/lib/cartContext";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -44,7 +41,6 @@ const fallbackImages = [
 ];
 
 export default function LatestProducts() {
-  const { addToCart, isInCart } = useCart();
   const [activeTab, setActiveTab] = useState("all");
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -162,8 +158,8 @@ export default function LatestProducts() {
                     delay: index * 0.05
                   }}
                 >
-                <Card className="overflow-hidden group relative p-0 gap-0 cursor-pointer hover:shadow-xl transition-shadow">
-                  {product.priceAfterDiscount && product.priceAfterDiscount < product.price && (
+                <Card className="overflow-hidden group relative p-0 gap-0 cursor-pointer hover:shadow-xl transition-shadow h-full flex flex-col">
+                  {product.priceAfterDiscount && product.priceAfterDiscount > 0 && product.priceAfterDiscount < product.price && (
                     <Badge variant="destructive" className="absolute top-2 left-2 z-10">
                       Sale
                     </Badge>
@@ -180,7 +176,7 @@ export default function LatestProducts() {
                     </Link>
                   </CardContent>
 
-                  <CardFooter className="flex-col gap-2 p-4">
+                  <CardFooter className="flex-col gap-2 p-4 mt-auto">
                     <div className="text-center w-full">
                       <h6 className="font-bold mb-2">{product.title}</h6>
                       <div className="flex justify-center gap-1 mb-2 text-yellow-500">
@@ -194,16 +190,14 @@ export default function LatestProducts() {
                           </svg>
                         ))}
                       </div>
-                      <p className="text-lg font-bold">
-                        {product.priceAfterDiscount && product.priceAfterDiscount < product.price ? (
-                          <>
-                            <span className="line-through text-gray-400 mr-2">${product.price}</span>
-                            <span className="text-red-600">${product.priceAfterDiscount}</span>
-                          </>
-                        ) : (
-                          `$${product.price}`
-                        )}
-                      </p>
+                      {product.priceAfterDiscount && product.priceAfterDiscount > 0 && product.priceAfterDiscount < product.price ? (
+                        <p className="text-lg font-bold">
+                          <span className="line-through text-gray-400 mr-2">₮{product.price.toLocaleString()}</span>
+                          <span className="text-red-600">₮{product.priceAfterDiscount.toLocaleString()}</span>
+                        </p>
+                      ) : (
+                        <p className="text-lg font-bold">₮{product.price.toLocaleString()}</p>
+                      )}
                     </div>
                   </CardFooter>
                 </Card>

@@ -33,7 +33,7 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
       }
 
       try {
-        const response = await fetch(`${API_URL}/products`);
+        const response = await fetch(`${API_URL}/products?limit=1000`);
         
         if (!response.ok) throw new Error('Failed to fetch products');
         

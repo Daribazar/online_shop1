@@ -47,7 +47,7 @@ export default function Padding() {
   useEffect(() => {
     async function loadFeaturedProducts() {
       try {
-        const response = await fetch(`${API_URL}/products`);
+        const response = await fetch(`${API_URL}/products?limit=1000`);
         const data = await response.json();
         // Filter only featured products
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -169,13 +169,13 @@ export default function Padding() {
                         ))}
                       </div>
                       <p className="text-base md:text-lg font-bold">
-                        {product.priceAfterDiscount ? (
+                        {product.priceAfterDiscount && product.priceAfterDiscount > 0 && product.priceAfterDiscount < product.price ? (
                           <>
-                            <span className="line-through text-gray-400 mr-2">${product.price}</span>
-                            <span className="text-red-600">${product.priceAfterDiscount}</span>
+                            <span className="line-through text-gray-400 mr-2">₮{product.price.toLocaleString()}</span>
+                            <span className="text-red-600">₮{product.priceAfterDiscount.toLocaleString()}</span>
                           </>
                         ) : (
-                          `$${product.price}`
+                          <span>₮{product.price.toLocaleString()}</span>
                         )}
                       </p>
                     </div>
