@@ -173,16 +173,20 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
 
             {/* Price */}
             <div className="flex items-center gap-4 mb-2">
-              <span className="text-3xl font-bold">
-                ${product.priceAfterDiscount || product.price}
-              </span>
-              {product.priceAfterDiscount && (
+              {product.priceAfterDiscount && product.priceAfterDiscount < product.price ? (
                 <>
+                  <span className="text-3xl font-bold">
+                    ${product.priceAfterDiscount}
+                  </span>
                   <span className="text-xl text-gray-400 line-through">${product.price}</span>
                   <Badge variant="destructive" className="text-lg px-3 py-1">
                     {discount}% OFF
                   </Badge>
                 </>
+              ) : (
+                <span className="text-3xl font-bold">
+                  ${product.price}
+                </span>
               )}
             </div>
             <p className="text-green-600 font-semibold mb-4">inclusive of all taxes</p>

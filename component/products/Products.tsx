@@ -206,6 +206,7 @@ export const Products = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {displayProducts.map((product, index) => {
                       const discount = calculateDiscount(product.price, product.priceAfterDiscount);
+                      const hasDiscount = product.priceAfterDiscount && product.priceAfterDiscount < product.price;
                       return (
                         <Card key={product._id} className="overflow-hidden group p-0 gap-0 cursor-pointer hover:shadow-lg transition-shadow">
                           <CardContent className="relative w-full h-64 overflow-hidden p-0">
@@ -222,7 +223,7 @@ export const Products = () => {
                             <h5 className="font-bold text-sm line-clamp-1">{product.title}</h5>
                             <p className="text-xs text-gray-600 line-clamp-2">{product.descripton}</p>
                             <div className="flex items-center gap-2 flex-wrap">
-                              {product.priceAfterDiscount ? (
+                              {hasDiscount ? (
                                 <>
                                   <span className="font-bold text-base">${product.priceAfterDiscount}</span>
                                   <span className="text-gray-400 line-through text-sm">${product.price}</span>

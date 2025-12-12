@@ -163,7 +163,7 @@ export default function LatestProducts() {
                   }}
                 >
                 <Card className="overflow-hidden group relative p-0 gap-0 cursor-pointer hover:shadow-xl transition-shadow">
-                  {product.priceAfterDiscount && (
+                  {product.priceAfterDiscount && product.priceAfterDiscount < product.price && (
                     <Badge variant="destructive" className="absolute top-2 left-2 z-10">
                       Sale
                     </Badge>
@@ -195,7 +195,7 @@ export default function LatestProducts() {
                         ))}
                       </div>
                       <p className="text-lg font-bold">
-                        {product.priceAfterDiscount ? (
+                        {product.priceAfterDiscount && product.priceAfterDiscount < product.price ? (
                           <>
                             <span className="line-through text-gray-400 mr-2">${product.price}</span>
                             <span className="text-red-600">${product.priceAfterDiscount}</span>
