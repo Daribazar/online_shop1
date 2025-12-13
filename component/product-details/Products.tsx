@@ -189,7 +189,6 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
                 </span>
               )}
             </div>
-            <p className="text-green-600 font-semibold mb-4">inclusive of all taxes</p>
             
             {/* Нийт тоо ширхэг (sizes байхгүй бол) */}
             {!product.sizes && product.quantity !== undefined && (

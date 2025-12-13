@@ -301,10 +301,10 @@ export const OrderPage = () => {
                 Захиалсан бүтээгдэхүүн ({orderedItems.length})
               </h4>
               <div className="space-y-3 max-h-60 overflow-y-auto">
-                {orderedItems.map((item) => {
+                {orderedItems.map((item, index) => {
                   const price = item.priceAfterDiscount || item.price;
                   return (
-                    <div key={item._id} className="flex gap-3 pb-3 border-b last:border-b-0">
+                    <div key={`ordered-${item._id}-${item.selectedSize || 'nosize'}-${index}`} className="flex gap-3 pb-3 border-b last:border-b-0">
                       <div className="relative w-16 h-16 shrink-0 bg-gray-100 rounded">
                         <Image
                           src={getImageSrc(item.imgCover || item.images?.[0])}
@@ -547,10 +547,10 @@ export const OrderPage = () => {
               {/* Бүтээгдэхүүний жагсаалт */}
               {localCart.length > 0 ? (
                 <div className="space-y-3 mb-4 max-h-96 overflow-y-auto">
-                  {localCart.map((item) => {
+                  {localCart.map((item, index) => {
                     const price = item.priceAfterDiscount || item.price;
                     return (
-                      <div key={item._id} className="flex gap-3 pb-3 border-b last:border-b-0">
+                      <div key={`cart-${item._id}-${item.selectedSize || 'nosize'}-${index}`} className="flex gap-3 pb-3 border-b last:border-b-0">
                         <div className="relative w-16 h-16 shrink-0 bg-gray-100 rounded">
                           <Image
                             src={getImageSrc(item.imgCover || item.images?.[0])}

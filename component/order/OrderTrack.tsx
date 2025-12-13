@@ -235,8 +235,8 @@ export function OrderTrackPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {order.cartItems.map((item) => (
-                    <div key={item.productId._id} className="flex gap-4 pb-4 border-b last:border-b-0">
+                  {order.cartItems.map((item, index) => (
+                    <div key={`track-${item.productId._id}-${item.selectedSize || 'nosize'}-${index}`} className="flex gap-4 pb-4 border-b last:border-b-0">
                       <div className="relative w-20 h-20 shrink-0 bg-gray-100 rounded">
                         <Image
                           src={getImageSrc(item.productId?.imgCover)}
