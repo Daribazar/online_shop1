@@ -505,6 +505,9 @@ function ProductForm({ token }: { token: string }) {
   // Category-оор ангилах state-үүд
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  
+  // Хайлтын state
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const loadCategories = async () => {
     try {
@@ -1134,7 +1137,43 @@ function ProductForm({ token }: { token: string }) {
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-6">Бүх Бүтээгдэхүүнүүд</h2>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <h2 className="text-2xl font-bold">Бүх Бүтээгдэхүүнүүд</h2>
+          
+          {/* Хайлтын талбар */}
+          <div className="w-full md:w-96">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Бүтээгдэхүүн хайх (нэрээр)..."
+                className="w-full px-4 py-2 pl-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
+              />
+              <svg
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X size={18} />
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <p className="text-xs text-gray-500 mt-1">
+                "{searchQuery}" хайлтын үр дүн
+              </p>
+            )}
+          </div>
+        </div>
         
         {loadingList ? (
           <div className="text-center py-8">
@@ -1148,16 +1187,47 @@ function ProductForm({ token }: { token: string }) {
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-8 text-gray-500">Бүтээгдэхүүн байхгүй байна</div>
-        ) : (
+        ) : (() => {
+          // Хайлтын үр дүн шалгах
+          const filteredProducts = products.filter((product) => {
+            return searchQuery.trim() === "" || 
+              product.title.toLowerCase().includes(searchQuery.toLowerCase());
+          });
+          
+          if (filteredProducts.length === 0) {
+            return (
+              <div className="text-center py-12">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400 mb-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <p className="text-gray-500 text-lg font-medium">
+                  "{searchQuery}" хайлтаар илэрц олдсонгүй
+                </p>
+                <p className="text-gray-400 text-sm mt-2">
+                  Өөр түлхүүр үг ашиглан дахин оролдоно уу
+                </p>
+              </div>
+            );
+          }
+          
+          return (
           <div className="space-y-4">
             {/* Category-оор ангилсан жагсаалт */}
             {categories.map((category) => {
-              // Тухайн category-н бүтээгдэхүүнүүдийг шүүх
+              // Тухайн category-н бүтээгдэхүүнүүдийг шүүх (хайлтын нөхцөлтэй)
               const categoryProducts = products.filter((product) => {
                 const productCategoryId = typeof product.category === 'string' 
                   ? product.category 
                   : product.category?._id;
-                return productCategoryId === category._id;
+                const matchesCategory = productCategoryId === category._id;
+                const matchesSearch = searchQuery.trim() === "" || 
+                  product.title.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
               });
 
               // Хэрэв тухайн category-д бүтээгдэхүүн байхгүй бол харуулахгүй
@@ -1293,7 +1363,11 @@ function ProductForm({ token }: { token: string }) {
 
             {/* Category-гүй бүтээгдэхүүнүүд */}
             {(() => {
-              const uncategorizedProducts = products.filter((product) => !product.category);
+              const uncategorizedProducts = products.filter((product) => {
+                const matchesSearch = searchQuery.trim() === "" || 
+                  product.title.toLowerCase().includes(searchQuery.toLowerCase());
+                return !product.category && matchesSearch;
+              });
               if (uncategorizedProducts.length === 0) return null;
 
               const isExpanded = expandedCategories.has('uncategorized');
@@ -1374,7 +1448,8 @@ function ProductForm({ token }: { token: string }) {
               );
             })()}
           </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );
