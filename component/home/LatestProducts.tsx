@@ -159,49 +159,49 @@ export default function LatestProducts() {
                     delay: index * 0.05
                   }}
                 >
-                <Card className="overflow-hidden group relative p-0 gap-0 cursor-pointer hover:shadow-xl transition-shadow h-full flex flex-col">
-                  {product.priceAfterDiscount && product.priceAfterDiscount > 0 && product.priceAfterDiscount < product.price && (
-                    <Badge variant="destructive" className="absolute top-2 left-2 z-10">
-                      Sale
-                    </Badge>
-                  )}
-                  
-                  <CardContent className="relative w-full h-80 overflow-hidden p-0">
-                    <Link href={`/product-details?id=${product._id}`}>
+                <Link href={`/product-details?id=${product._id}`}>
+                  <Card className="overflow-hidden group relative p-0 gap-0 cursor-pointer hover:shadow-xl transition-shadow h-full flex flex-col">
+                    {product.priceAfterDiscount && product.priceAfterDiscount > 0 && product.priceAfterDiscount < product.price && (
+                      <Badge variant="destructive" className="absolute top-2 left-2 z-10">
+                        Sale
+                      </Badge>
+                    )}
+                    
+                    <CardContent className="relative w-full h-80 overflow-hidden p-0">
                       <Image
                         src={getImageSrc(product.imgCover, product.images, index)}
                         fill
                         alt={product.title}
                         className="object-cover"
                       />
-                    </Link>
-                  </CardContent>
+                    </CardContent>
 
-                  <CardFooter className="flex-col gap-2 p-4 mt-auto">
-                    <div className="text-center w-full">
-                      <h6 className="font-bold mb-2">{product.title}</h6>
-                      <div className="flex justify-center gap-1 mb-2 text-yellow-500">
-                        {[...Array(Math.round(product.ratingsAverage || 5))].map((_, i) => (
-                          <svg
-                            key={i}
-                            className="w-4 h-4 fill-current"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                          </svg>
-                        ))}
+                    <CardFooter className="flex-col gap-2 p-4 mt-auto">
+                      <div className="text-center w-full">
+                        <h6 className="font-bold mb-2">{product.title}</h6>
+                        <div className="flex justify-center gap-1 mb-2 text-yellow-500">
+                          {[...Array(Math.round(product.ratingsAverage || 5))].map((_, i) => (
+                            <svg
+                              key={i}
+                              className="w-4 h-4 fill-current"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                            </svg>
+                          ))}
+                        </div>
+                        {product.priceAfterDiscount && product.priceAfterDiscount > 0 && product.priceAfterDiscount < product.price ? (
+                          <p className="text-lg font-bold">
+                            <span className="line-through text-gray-400 mr-2">₮{product.price.toLocaleString()}</span>
+                            <span className="text-red-600">₮{product.priceAfterDiscount.toLocaleString()}</span>
+                          </p>
+                        ) : (
+                          <p className="text-lg font-bold">₮{product.price.toLocaleString()}</p>
+                        )}
                       </div>
-                      {product.priceAfterDiscount && product.priceAfterDiscount > 0 && product.priceAfterDiscount < product.price ? (
-                        <p className="text-lg font-bold">
-                          <span className="line-through text-gray-400 mr-2">₮{product.price.toLocaleString()}</span>
-                          <span className="text-red-600">₮{product.priceAfterDiscount.toLocaleString()}</span>
-                        </p>
-                      ) : (
-                        <p className="text-lg font-bold">₮{product.price.toLocaleString()}</p>
-                      )}
-                    </div>
-                  </CardFooter>
-                </Card>
+                    </CardFooter>
+                  </Card>
+                </Link>
               </motion.div>
             ))}
             </motion.div>
