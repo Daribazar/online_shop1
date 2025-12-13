@@ -570,10 +570,21 @@ function ProductForm({ token }: { token: string }) {
   // Size-ын утгыг шинэчлэх
   const handleSizeChange = (index: number, field: keyof SizeInfo, value: string | number) => {
     const newSizes = [...sizes];
-    newSizes[index] = {
-      ...newSizes[index],
-      [field]: value,
-    };
+    
+    // Quantity бол number болгож хөрвүүлэх
+    if (field === 'quantity') {
+      const numValue = typeof value === 'string' ? parseInt(value) : value;
+      newSizes[index] = {
+        ...newSizes[index],
+        [field]: isNaN(numValue) ? 0 : numValue,
+      };
+    } else {
+      newSizes[index] = {
+        ...newSizes[index],
+        [field]: value,
+      };
+    }
+    
     setSizes(newSizes);
   };
 
@@ -954,7 +965,7 @@ function ProductForm({ token }: { token: string }) {
                       <input
                         type="number"
                         value={sizeInfo.quantity}
-                        onChange={(e) => handleSizeChange(index, "quantity", parseInt(e.target.value) || 0)}
+                        onChange={(e) => handleSizeChange(index, "quantity", e.target.value)}
                         className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         min="0"
                         placeholder="0"
