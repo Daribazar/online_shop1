@@ -501,6 +501,10 @@ function ProductForm({ token }: { token: string }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingList, setLoadingList] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  
+  // Category-оор ангилах state-үүд
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   const loadCategories = async () => {
     try {
@@ -1145,87 +1149,230 @@ function ProductForm({ token }: { token: string }) {
         ) : products.length === 0 ? (
           <div className="text-center py-8 text-gray-500">Бүтээгдэхүүн байхгүй байна</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {products.map((product) => (
-              <div key={product._id} className="border rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                {product.imgCover && !product.imgCover.includes('undefined') && (
-                  <div className="relative h-40 mb-3">
-                    <Image
-                      src={product.imgCover}
-                      alt={product.title}
-                      fill
-                      className="object-contain rounded"
-                    />
-                  </div>
-                )}
-                <h3 className="font-bold text-lg mb-2">{product.title}</h3>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
-                <p className="text-lg font-bold text-blue-600 mb-2">${product.price}</p>
-                
-                {/* Category болон Brand харуулах */}
-                <div className="mb-3 text-xs space-y-1">
-                  {product.category && (
-                    <p>
-                      <span className="font-semibold text-gray-700">Category:</span>{' '}
-                      <span className="text-gray-900 font-medium">
-                        {typeof product.category === 'string' 
-                          ? product.category 
-                          : product.category.name}
-                      </span>
-                    </p>
-                  )}
-                  {product.brand && (
-                    <p>
-                      <span className="font-semibold text-gray-700">Brand:</span>{' '}
-                      <span className="text-gray-900 font-medium">
-                        {typeof product.brand === 'string' 
-                          ? product.brand 
-                          : product.brand.name}
-                      </span>
-                    </p>
-                  )}
-                </div>
-                
-                {/* Size мэдээлэл харуулах */}
-                {product.sizes && product.sizes.length > 0 && (
-                  <div className="mb-3 text-xs">
-                    <p className="font-semibold text-gray-700 mb-1">Sizes:</p>
-                    <div className="space-y-1">
-                      {product.sizes.map((sizeInfo, idx) => (
-                        <div key={idx} className="bg-gray-50 p-2 rounded">
-                          <span className="font-medium">{sizeInfo.size}</span>
-                          {" - "}
-                          <span className="text-gray-600">{sizeInfo.quantity} ширхэг</span>
-                          {sizeInfo.description && (
-                            <p className="text-gray-500 italic text-xs mt-1">
-                              {sizeInfo.description}
-                            </p>
-                          )}
+          <div className="space-y-4">
+            {/* Category-оор ангилсан жагсаалт */}
+            {categories.map((category) => {
+              // Тухайн category-н бүтээгдэхүүнүүдийг шүүх
+              const categoryProducts = products.filter((product) => {
+                const productCategoryId = typeof product.category === 'string' 
+                  ? product.category 
+                  : product.category?._id;
+                return productCategoryId === category._id;
+              });
+
+              // Хэрэв тухайн category-д бүтээгдэхүүн байхгүй бол харуулахгүй
+              if (categoryProducts.length === 0) return null;
+
+              const isExpanded = expandedCategories.has(category._id);
+
+              return (
+                <div key={category._id} className="border rounded-lg overflow-hidden">
+                  {/* Category толгой хэсэг */}
+                  <button
+                    onClick={() => {
+                      const newExpanded = new Set(expandedCategories);
+                      if (isExpanded) {
+                        newExpanded.delete(category._id);
+                      } else {
+                        newExpanded.add(category._id);
+                      }
+                      setExpandedCategories(newExpanded);
+                    }}
+                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all duration-200"
+                  >
+                    <div className="flex items-center gap-3">
+                      {category.Image && !category.Image.includes('undefined') && (
+                        <div className="relative w-12 h-12 rounded-lg overflow-hidden">
+                          <Image
+                            src={category.Image}
+                            alt={category.name}
+                            fill
+                            className="object-cover"
+                          />
                         </div>
-                      ))}
+                      )}
+                      <div className="text-left">
+                        <h3 className="text-lg font-bold text-gray-800">{category.name}</h3>
+                        <p className="text-sm text-gray-600">
+                          {categoryProducts.length} бүтээгдэхүүн
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )}
-                
-                <p className="text-xs text-gray-500 mb-3">ID: {product._id}</p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleEdit(product)}
-                    aria-label={`${product.title} бүтээгдэхүүнийг засах`}
-                    className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  >
-                    Засах
+                    <svg
+                      className={`w-6 h-6 text-gray-600 transition-transform duration-200 ${
+                        isExpanded ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </button>
-                  <button
-                    onClick={() => handleDelete(product._id)}
-                    aria-label={`${product.title} бүтээгдэхүүнийг устгах`}
-                    className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                  >
-                    Устгах
-                  </button>
+
+                  {/* Category-н бүтээгдэхүүнүүд */}
+                  {isExpanded && (
+                    <div className="p-4 bg-gray-50">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {categoryProducts.map((product) => (
+                          <div key={product._id} className="bg-white border rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                            {product.imgCover && !product.imgCover.includes('undefined') && (
+                              <div className="relative h-40 mb-3">
+                                <Image
+                                  src={product.imgCover}
+                                  alt={product.title}
+                                  fill
+                                  className="object-contain rounded"
+                                />
+                              </div>
+                            )}
+                            <h3 className="font-bold text-lg mb-2">{product.title}</h3>
+                            <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                            <p className="text-lg font-bold text-blue-600 mb-2">${product.price}</p>
+                            
+                            {/* Brand харуулах */}
+                            {product.brand && (
+                              <div className="mb-3 text-xs">
+                                <p>
+                                  <span className="font-semibold text-gray-700">Brand:</span>{' '}
+                                  <span className="text-gray-900 font-medium">
+                                    {typeof product.brand === 'string' 
+                                      ? product.brand 
+                                      : product.brand.name}
+                                  </span>
+                                </p>
+                              </div>
+                            )}
+                            
+                            {/* Size мэдээлэл харуулах */}
+                            {product.sizes && product.sizes.length > 0 && (
+                              <div className="mb-3 text-xs">
+                                <p className="font-semibold text-gray-700 mb-1">Sizes:</p>
+                                <div className="space-y-1">
+                                  {product.sizes.map((sizeInfo, idx) => (
+                                    <div key={idx} className="bg-gray-50 p-2 rounded">
+                                      <span className="font-medium">{sizeInfo.size}</span>
+                                      {" - "}
+                                      <span className="text-gray-600">{sizeInfo.quantity} ширхэг</span>
+                                      {sizeInfo.description && (
+                                        <p className="text-gray-500 italic text-xs mt-1">
+                                          {sizeInfo.description}
+                                        </p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            
+                            <p className="text-xs text-gray-500 mb-3">ID: {product._id}</p>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEdit(product)}
+                                aria-label={`${product.title} бүтээгдэхүүнийг засах`}
+                                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                              >
+                                Засах
+                              </button>
+                              <button
+                                onClick={() => handleDelete(product._id)}
+                                aria-label={`${product.title} бүтээгдэхүүнийг устгах`}
+                                className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                              >
+                                Устгах
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
+
+            {/* Category-гүй бүтээгдэхүүнүүд */}
+            {(() => {
+              const uncategorizedProducts = products.filter((product) => !product.category);
+              if (uncategorizedProducts.length === 0) return null;
+
+              const isExpanded = expandedCategories.has('uncategorized');
+
+              return (
+                <div className="border rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => {
+                      const newExpanded = new Set(expandedCategories);
+                      if (isExpanded) {
+                        newExpanded.delete('uncategorized');
+                      } else {
+                        newExpanded.add('uncategorized');
+                      }
+                      setExpandedCategories(newExpanded);
+                    }}
+                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-200"
+                  >
+                    <div className="text-left">
+                      <h3 className="text-lg font-bold text-gray-800">Category-гүй бүтээгдэхүүнүүд</h3>
+                      <p className="text-sm text-gray-600">
+                        {uncategorizedProducts.length} бүтээгдэхүүн
+                      </p>
+                    </div>
+                    <svg
+                      className={`w-6 h-6 text-gray-600 transition-transform duration-200 ${
+                        isExpanded ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {isExpanded && (
+                    <div className="p-4 bg-gray-50">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {uncategorizedProducts.map((product) => (
+                          <div key={product._id} className="bg-white border rounded-lg p-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                            {product.imgCover && !product.imgCover.includes('undefined') && (
+                              <div className="relative h-40 mb-3">
+                                <Image
+                                  src={product.imgCover}
+                                  alt={product.title}
+                                  fill
+                                  className="object-contain rounded"
+                                />
+                              </div>
+                            )}
+                            <h3 className="font-bold text-lg mb-2">{product.title}</h3>
+                            <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                            <p className="text-lg font-bold text-blue-600 mb-2">${product.price}</p>
+                            <p className="text-xs text-gray-500 mb-3">ID: {product._id}</p>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEdit(product)}
+                                aria-label={`${product.title} бүтээгдэхүүнийг засах`}
+                                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                              >
+                                Засах
+                              </button>
+                              <button
+                                onClick={() => handleDelete(product._id)}
+                                aria-label={`${product.title} бүтээгдэхүүнийг устгах`}
+                                className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                              >
+                                Устгах
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         )}
       </div>
