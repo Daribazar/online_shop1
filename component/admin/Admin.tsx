@@ -471,6 +471,7 @@ function CategoryForm({ token }: { token: string }) {
 
 // Бүтээгдэхүүн оруулах болон удирдах форм
 function ProductForm({ token }: { token: string }) {
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -636,6 +637,70 @@ function ProductForm({ token }: { token: string }) {
     setImagePreviews(imagePreviews.filter((_, i) => i !== index));
   };
 
+  const handleEdit = (product: Product) => {
+    // Form руу бүтээгдэхүүний мэдээллийг оруулах
+    setEditingProductId(product._id);
+    setFormData({
+      title: product.title,
+      description: product.description,
+      price: String(product.price),
+      priceAfterDiscount: product.priceAfterDiscount ? String(product.priceAfterDiscount) : "",
+      quantity: product.quantity ? String(product.quantity) : "",
+      category: typeof product.category === 'string' ? product.category : product.category?._id || "",
+      subcategory: typeof product.subcategory === 'string' ? product.subcategory : product.subcategory?._id || "",
+      brand: typeof product.brand === 'string' ? product.brand : product.brand?._id || "",
+      isFeatured: product.isFeatured || false,
+    });
+    
+    // Size мэдээллийг оруулах (_id болон id талбаруудыг устгана)
+    if (product.sizes && product.sizes.length > 0) {
+      const cleanedSizes = product.sizes.map(({ size, quantity, description }) => ({
+        size,
+        quantity,
+        description: description || ""
+      }));
+      setSizes(cleanedSizes);
+      setNumberOfSizes(cleanedSizes.length);
+    }
+    
+    // Зураг preview харуулах
+    if (product.imgCover) {
+      setCoverPreview(product.imgCover);
+    }
+    if (product.images && product.images.length > 0) {
+      setImagePreviews(product.images);
+    }
+    
+    // Form руу scroll хийх
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProductId(null);
+    setFormData({
+      title: "",
+      description: "",
+      price: "",
+      priceAfterDiscount: "",
+      quantity: "",
+      category: "",
+      subcategory: "",
+      brand: "",
+      isFeatured: false,
+    });
+    setNumberOfSizes(3);
+    setUseCustomSizes(false);
+    setSizes([
+      { size: "S", quantity: 0, description: "" },
+      { size: "M", quantity: 0, description: "" },
+      { size: "L", quantity: 0, description: "" },
+    ]);
+    setImgCover(null);
+    setImages([]);
+    setCoverPreview("");
+    setImagePreviews([]);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -643,8 +708,9 @@ function ProductForm({ token }: { token: string }) {
     try {
       const data = new FormData();
       
+      // FormData-д бүх утгыг нэмэх (boolean утгуудыг ч оруулна)
       Object.entries(formData).forEach(([key, value]) => {
-        if (value !== "" && value !== false) {
+        if (value !== "") {
           data.append(key, String(value));
         }
       });
@@ -657,42 +723,44 @@ function ProductForm({ token }: { token: string }) {
       if (imgCover) data.append("imgCover", imgCover);
       images.forEach((img) => data.append("images", img));
 
-      const response = await fetch(`${API_URL}/products`, {
-        method: "POST",
+      // Edit эсвэл шинэ бүтээгдэхүүн
+      const url = editingProductId 
+        ? `${API_URL}/products/${editingProductId}` 
+        : `${API_URL}/products`;
+      const method = editingProductId ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: { token },
         body: data,
       });
 
-      const responseData = await response.json();
+      let responseData;
+      const contentType = response.headers.get("content-type");
+      
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json();
+      } else {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        responseData = { error: text };
+      }
       
       if (response.ok) {
-        alert("Бүтээгдэхүүн амжилттай нэмэгдлээ!");
-        setFormData({
-          title: "",
-          description: "",
-          price: "",
-          priceAfterDiscount: "",
-          quantity: "",
-          category: "",
-          subcategory: "",
-          brand: "",
-          isFeatured: false,
-        });
-        // Size-ыг default руу буцаах
-        setNumberOfSizes(3);
-        setUseCustomSizes(false);
-        setSizes([
-          { size: "S", quantity: 0, description: "" },
-          { size: "M", quantity: 0, description: "" },
-          { size: "L", quantity: 0, description: "" },
-        ]);
-        setImgCover(null);
-        setImages([]);
-        setCoverPreview("");
-        setImagePreviews([]);
+        alert(editingProductId ? "Бүтээгдэхүүн амжилттай засагдлаа!" : "Бүтээгдэхүүн амжилттай нэмэгдлээ!");
+        handleCancelEdit();
         await loadProducts(); // Жагсаалтыг дахин ачаалах
       } else {
-        alert(responseData.message || responseData.error || "Алдаа гарлаа!");
+        console.error("Server error response:", response.status, responseData);
+        
+        // Validation errors харуулах
+        if (responseData.errors && Array.isArray(responseData.errors)) {
+          const errorMessages = responseData.errors.map((e: any) => `${e.field}: ${e.message}`).join('\n');
+          alert(`Validation алдаа:\n${errorMessages}`);
+        } else {
+          const errorMsg = responseData.message || responseData.error || responseData.err || JSON.stringify(responseData);
+          alert(`Алдаа гарлаа: ${errorMsg}`);
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -726,7 +794,20 @@ function ProductForm({ token }: { token: string }) {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-6">Бүтээгдэхүүн оруулах</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">
+            {editingProductId ? "Бүтээгдэхүүн засах" : "Бүтээгдэхүүн оруулах"}
+          </h2>
+          {editingProductId && (
+            <button
+              type="button"
+              onClick={handleCancelEdit}
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+            >
+              Болих
+            </button>
+          )}
+        </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -1031,7 +1112,7 @@ function ProductForm({ token }: { token: string }) {
                 Уншиж байна...
               </span>
             ) : (
-              "Бүтээгдэхүүн нэмэх"
+              editingProductId ? "Бүтээгдэхүүн засах" : "Бүтээгдэхүүн нэмэх"
             )}
           </button>
         </form>
@@ -1116,13 +1197,22 @@ function ProductForm({ token }: { token: string }) {
                 )}
                 
                 <p className="text-xs text-gray-500 mb-3">ID: {product._id}</p>
-                <button
-                  onClick={() => handleDelete(product._id)}
-                  aria-label={`${product.title} бүтээгдэхүүнийг устгах`}
-                  className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                >
-                  Устгах
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(product)}
+                    aria-label={`${product.title} бүтээгдэхүүнийг засах`}
+                    className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  >
+                    Засах
+                  </button>
+                  <button
+                    onClick={() => handleDelete(product._id)}
+                    aria-label={`${product.title} бүтээгдэхүүнийг устгах`}
+                    className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-all duration-200 hover:shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    Устгах
+                  </button>
+                </div>
               </div>
             ))}
           </div>

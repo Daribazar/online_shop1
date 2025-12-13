@@ -22,6 +22,9 @@ export function MyOrdersPage() {
   const [guestOrders, setGuestOrders] = useState<GuestOrder[]>([]);
 
   useEffect(() => {
+    // Хуудас дээш scroll хийх
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     // Guest-ийн захиалгуудыг localStorage-оос унших
     const saved = localStorage.getItem("guestOrders");
     if (saved) {

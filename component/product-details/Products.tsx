@@ -68,6 +68,9 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
+    // Хуудас дээш scroll хийх
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     async function loadProduct() {
       if (!productId) {
         setLoading(false);

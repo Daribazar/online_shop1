@@ -54,6 +54,11 @@ export function OrderTrackPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Хуудас дээш scroll хийх
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   // URL-с transaction ID авч автоматаар хайх
   useEffect(() => {
     if (txnFromUrl) {

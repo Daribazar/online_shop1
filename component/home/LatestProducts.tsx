@@ -54,7 +54,8 @@ export default function LatestProducts() {
         fetchCategories()
       ]);
       if (productsData && productsData.length > 0) {
-        setProducts(productsData);
+        // Шинэ бүтээгдэхүүнүүдийг эхэнд харуулах (reverse)
+        setProducts([...productsData].reverse());
       }
       if (categoriesData && categoriesData.length > 0) {
         setCategories(categoriesData);

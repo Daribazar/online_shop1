@@ -82,6 +82,11 @@ export const OrderPage = () => {
   // Алдааны мессеж
   const [error, setError] = useState<string>("");
 
+  // Хуудас дээш scroll хийх
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   // Хэрэв хэрэглэгч нэвтэрсэн бол хаягийг автоматаар дүүргэх
   useEffect(() => {
     if (isAuthenticated && user) {

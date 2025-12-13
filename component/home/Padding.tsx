@@ -52,7 +52,8 @@ export default function Padding() {
         // Filter only featured products
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const featured = data.getAllProducts?.filter((p: any) => p.isFeatured) || [];
-        setProducts(featured);
+        // Шинэ бүтээгдэхүүнүүдийг эхэнд харуулах (reverse)
+        setProducts([...featured].reverse());
       } catch (error) {
         console.error("Error loading featured products:", error);
       } finally {

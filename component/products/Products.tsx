@@ -44,8 +44,28 @@ export const Products = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("new");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(40); // Default: 40 for desktop
+
+  // Screen size-г шалгаад items per page тохируулах
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth < 768) {
+        setItemsPerPage(20); // Mobile: 20 items
+      } else {
+        setItemsPerPage(40); // Desktop: 40 items
+      }
+    };
+
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
 
   useEffect(() => {
+    // Хуудас дээш scroll хийх
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     async function loadData() {
       const [productsData, categoriesData] = await Promise.all([
         fetchProducts(),
@@ -63,6 +83,11 @@ export const Products = () => {
     }
     loadData();
   }, [categoryFromUrl]);
+
+  // Category эсвэл sort өөрчлөгдөхөд хуудсыг 1 болгох
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategories, sortBy]);
 
   // Хямдралын хувийг тооцоолох
   const calculateDiscount = (price: number, priceAfterDiscount?: number) => {
@@ -143,7 +168,39 @@ export const Products = () => {
     return result;
   };
 
-  const displayProducts = filteredAndSortedProducts();
+  const allFilteredProducts = filteredAndSortedProducts();
+  
+  // Pagination тооцоолох
+  const totalPages = Math.ceil(allFilteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayProducts = allFilteredProducts.slice(startIndex, endIndex);
+
+  // Pagination товчлуур
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Pagination товчнууд үүсгэх
+  const getPaginationButtons = () => {
+    const buttons = [];
+    const maxButtons = 5;
+    
+    let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+    
+    if (endPage - startPage < maxButtons - 1) {
+      startPage = Math.max(1, endPage - maxButtons + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(i);
+    }
+    
+    return buttons;
+  };
+
   return (
     <section className="py-4">
       <div className="container mx-auto px-4">
@@ -178,7 +235,14 @@ export const Products = () => {
             <div className="bg-white rounded-lg shadow-md">
               {/* Header */}
               <div className="bg-gray-100 p-4 flex flex-wrap items-center justify-between gap-4">
-                <div className="font-semibold">{displayProducts.length} Items Found</div>
+                <div className="font-semibold">
+                  {allFilteredProducts.length} Items Found
+                  {totalPages > 1 && (
+                    <span className="text-sm text-gray-600 ml-2">
+                      (Page {currentPage} of {totalPages})
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm">Sort By</span>
                   <select 
@@ -200,46 +264,113 @@ export const Products = () => {
               <div className="p-4">
                 {loading ? (
                   <div className="text-center py-8">Loading products...</div>
-                ) : displayProducts.length === 0 ? (
+                ) : allFilteredProducts.length === 0 ? (
                   <div className="text-center py-8">No products found</div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {displayProducts.map((product, index) => {
-                      const discount = calculateDiscount(product.price, product.priceAfterDiscount);
-                      const hasDiscount = product.priceAfterDiscount && product.priceAfterDiscount < product.price;
-                      return (
-                        <Card key={product._id} className="overflow-hidden group p-0 gap-0 cursor-pointer hover:shadow-lg transition-shadow">
-                          <CardContent className="relative w-full h-64 overflow-hidden p-0">
-                            <Link href={`/product-details?id=${product._id}`}>
-                              <Image
-                                src={getImageSrc(product.imgCover, product.images, index)}
-                                fill
-                                alt={product.title}
-                                className="object-cover"
-                              />
-                            </Link>
-                          </CardContent>
-                          <CardFooter className="flex flex-col items-start gap-2 p-3">
-                            <h5 className="font-bold text-sm line-clamp-1">{product.title}</h5>
-                            <p className="text-xs text-gray-600 line-clamp-2">{product.descripton}</p>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {hasDiscount ? (
-                                <>
-                                  <span className="font-bold text-base">${product.priceAfterDiscount}</span>
-                                  <span className="text-gray-400 line-through text-sm">${product.price}</span>
-                                  <Badge variant="destructive" className="text-xs">
-                                    {discount}% OFF
-                                  </Badge>
-                                </>
-                              ) : (
-                                <span className="font-bold text-base">${product.price}</span>
-                              )}
-                            </div>
-                          </CardFooter>
-                        </Card>
-                      );
-                    })}
-                  </div>
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {displayProducts.map((product, index) => {
+                        const discount = calculateDiscount(product.price, product.priceAfterDiscount);
+                        const hasDiscount = product.priceAfterDiscount && product.priceAfterDiscount < product.price;
+                        return (
+                          <Card key={product._id} className="overflow-hidden group p-0 gap-0 cursor-pointer hover:shadow-lg transition-shadow">
+                            <CardContent className="relative w-full h-64 overflow-hidden p-0">
+                              <Link href={`/product-details?id=${product._id}`}>
+                                <Image
+                                  src={getImageSrc(product.imgCover, product.images, index)}
+                                  fill
+                                  alt={product.title}
+                                  className="object-cover"
+                                />
+                              </Link>
+                            </CardContent>
+                            <CardFooter className="flex flex-col items-start gap-2 p-3">
+                              <h5 className="font-bold text-sm line-clamp-1">{product.title}</h5>
+                              <p className="text-xs text-gray-600 line-clamp-2">{product.descripton}</p>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {hasDiscount ? (
+                                  <>
+                                    <span className="font-bold text-base">${product.priceAfterDiscount}</span>
+                                    <span className="text-gray-400 line-through text-sm">${product.price}</span>
+                                    <Badge variant="destructive" className="text-xs">
+                                      {discount}% OFF
+                                    </Badge>
+                                  </>
+                                ) : (
+                                  <span className="font-bold text-base">${product.price}</span>
+                                )}
+                              </div>
+                            </CardFooter>
+                          </Card>
+                        );
+                      })}
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                      <div className="mt-8 flex justify-center items-center gap-2">
+                        {/* Previous Button */}
+                        <Button
+                          variant="outline"
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          disabled={currentPage === 1}
+                          className="px-4"
+                        >
+                          Previous
+                        </Button>
+
+                        {/* First Page */}
+                        {currentPage > 3 && (
+                          <>
+                            <Button
+                              variant={currentPage === 1 ? "default" : "outline"}
+                              onClick={() => handlePageChange(1)}
+                              className="w-10 h-10 p-0"
+                            >
+                              1
+                            </Button>
+                            {currentPage > 4 && <span className="px-2">...</span>}
+                          </>
+                        )}
+
+                        {/* Page Numbers */}
+                        {getPaginationButtons().map((page) => (
+                          <Button
+                            key={page}
+                            variant={currentPage === page ? "default" : "outline"}
+                            onClick={() => handlePageChange(page)}
+                            className="w-10 h-10 p-0"
+                          >
+                            {page}
+                          </Button>
+                        ))}
+
+                        {/* Last Page */}
+                        {currentPage < totalPages - 2 && (
+                          <>
+                            {currentPage < totalPages - 3 && <span className="px-2">...</span>}
+                            <Button
+                              variant={currentPage === totalPages ? "default" : "outline"}
+                              onClick={() => handlePageChange(totalPages)}
+                              className="w-10 h-10 p-0"
+                            >
+                              {totalPages}
+                            </Button>
+                          </>
+                        )}
+
+                        {/* Next Button */}
+                        <Button
+                          variant="outline"
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                          className="px-4"
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
