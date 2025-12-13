@@ -273,35 +273,35 @@ export const Products = () => {
                         const discount = calculateDiscount(product.price, product.priceAfterDiscount);
                         const hasDiscount = product.priceAfterDiscount && product.priceAfterDiscount < product.price;
                         return (
-                          <Card key={product._id} className="overflow-hidden group p-0 gap-0 cursor-pointer hover:shadow-lg transition-shadow">
-                            <CardContent className="relative w-full h-64 overflow-hidden p-0">
-                              <Link href={`/product-details?id=${product._id}`}>
+                          <Link key={product._id} href={`/product-details?id=${product._id}`}>
+                            <Card className="overflow-hidden group p-0 gap-0 cursor-pointer hover:shadow-lg transition-shadow">
+                              <CardContent className="relative w-full h-64 overflow-hidden p-0">
                                 <Image
                                   src={getImageSrc(product.imgCover, product.images, index)}
                                   fill
                                   alt={product.title}
                                   className="object-cover"
                                 />
-                              </Link>
-                            </CardContent>
-                            <CardFooter className="flex flex-col items-start gap-2 p-3">
-                              <h5 className="font-bold text-sm line-clamp-1">{product.title}</h5>
-                              <p className="text-xs text-gray-600 line-clamp-2">{product.descripton}</p>
-                              <div className="flex items-center gap-2 flex-wrap">
-                                {hasDiscount ? (
-                                  <>
-                                    <span className="font-bold text-base">${product.priceAfterDiscount}</span>
-                                    <span className="text-gray-400 line-through text-sm">${product.price}</span>
-                                    <Badge variant="destructive" className="text-xs">
-                                      {discount}% OFF
-                                    </Badge>
-                                  </>
-                                ) : (
-                                  <span className="font-bold text-base">${product.price}</span>
-                                )}
-                              </div>
-                            </CardFooter>
-                          </Card>
+                              </CardContent>
+                              <CardFooter className="flex flex-col items-start gap-2 p-3">
+                                <h5 className="font-bold text-sm line-clamp-1">{product.title}</h5>
+                                <p className="text-xs text-gray-600 line-clamp-2">{product.descripton}</p>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  {hasDiscount ? (
+                                    <>
+                                      <span className="font-bold text-base">${product.priceAfterDiscount}</span>
+                                      <span className="text-gray-400 line-through text-sm">${product.price}</span>
+                                      <Badge variant="destructive" className="text-xs">
+                                        {discount}% OFF
+                                      </Badge>
+                                    </>
+                                  ) : (
+                                    <span className="font-bold text-base">${product.price}</span>
+                                  )}
+                                </div>
+                              </CardFooter>
+                            </Card>
+                          </Link>
                         );
                       })}
                     </div>
