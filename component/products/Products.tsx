@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-// Category төрөл
+// Ангилал төрөл
 type Category = {
   _id: string;
   name: string;
@@ -74,7 +74,7 @@ export const Products = () => {
       setProducts(productsData);
       setCategories(categoriesData);
       
-      // Auto-select category from URL
+      // URL-аас ангилал автоматаар сонгох
       if (categoryFromUrl) {
         setSelectedCategories([categoryFromUrl]);
       }
@@ -84,7 +84,7 @@ export const Products = () => {
     loadData();
   }, [categoryFromUrl]);
 
-  // Category эсвэл sort өөрчлөгдөхөд хуудсыг 1 болгох
+  // Ангилал эсвэл эрэмбэлэлт өөрчлөгдөхөд хуудсыг 1 болгох
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategories, sortBy]);
@@ -114,7 +114,7 @@ export const Products = () => {
     return fallbackImages[index % fallbackImages.length];
   };
 
-  // Category сонгох/болих
+  // Ангилал сонгох/болих
   const handleCategoryToggle = (categoryId: string) => {
     setSelectedCategories(prev => 
       prev.includes(categoryId) 
@@ -127,7 +127,7 @@ export const Products = () => {
   const filteredAndSortedProducts = () => {
     let result = [...products];
 
-    // Filter by categories
+    // Ангилалаар шүүх
     if (selectedCategories.length > 0) {
       result = result.filter(p => {
         if (!p.category) return false;
@@ -208,11 +208,11 @@ export const Products = () => {
           {/* Filter Sidebar */}
           <div className="w-full lg:w-1/4">
             <div className="bg-white rounded-lg shadow-md p-4">
-              <h5 className="text-xl font-bold mb-4">Filters</h5>
+              <h5 className="text-xl font-bold mb-4">Шүүлтүүр</h5>
               
-              {/* Categories */}
+              {/* Ангилалууд */}
               <div className="mb-6">
-                <h6 className="bg-gray-100 p-2 font-bold mb-2">Categories</h6>
+                <h6 className="bg-gray-100 p-2 font-bold mb-2">Ангилал</h6>
                 <div className="max-h-64 overflow-y-auto space-y-2">
                   {categories.map((cat) => (
                     <label key={cat._id} className="flex items-center gap-2 cursor-pointer">
@@ -236,26 +236,26 @@ export const Products = () => {
               {/* Header */}
               <div className="bg-gray-100 p-4 flex flex-wrap items-center justify-between gap-4">
                 <div className="font-semibold">
-                  {allFilteredProducts.length} Items Found
+                  {allFilteredProducts.length} Бүтээгдэхүүн олдлоо
                   {totalPages > 1 && (
                     <span className="text-sm text-gray-600 ml-2">
-                      (Page {currentPage} of {totalPages})
+                      (Хуудас {currentPage} / {totalPages})
                     </span>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">Sort By</span>
+                  <span className="text-sm">Эрэмбэлэх</span>
                   <select 
                     className="border rounded px-3 py-1"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                   >
-                    <option value="new">What&apos;s New</option>
-                    <option value="popularity">Popularity</option>
-                    <option value="discount">Better Discount</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="rating">Customer Rating</option>
+                    <option value="new">Шинэ бүтээгдэхүүн</option>
+                    <option value="popularity">Алдартай</option>
+                    <option value="discount">Хямдралтай</option>
+                    <option value="price-high">Үнэ: Өндрөөс нам</option>
+                    <option value="price-low">Үнэ: Намаас өндөр</option>
+                    <option value="rating">Үнэлгээ</option>
                   </select>
                 </div>
               </div>
@@ -263,9 +263,9 @@ export const Products = () => {
               {/* Products Grid */}
               <div className="p-4">
                 {loading ? (
-                  <div className="text-center py-8">Loading products...</div>
+                  <div className="text-center py-8">Бүтээгдэхүүн ачааллаж байна...</div>
                 ) : allFilteredProducts.length === 0 ? (
-                  <div className="text-center py-8">No products found</div>
+                  <div className="text-center py-8">Бүтээгдэхүүн олдсонгүй</div>
                 ) : (
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -316,7 +316,7 @@ export const Products = () => {
                           disabled={currentPage === 1}
                           className="px-4"
                         >
-                          Previous
+                          Өмнөх
                         </Button>
 
                         {/* First Page */}
@@ -366,7 +366,7 @@ export const Products = () => {
                           disabled={currentPage === totalPages}
                           className="px-4"
                         >
-                          Next
+                          Дараах
                         </Button>
                       </div>
                     )}

@@ -8,45 +8,45 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const slides = [
   {
     id: 0,
-    title: "New Arrival",
-    subtitle: "Women Fashion",
-    discount: "Last call for upto 25%",
+    title: "Шинэ бүтээгдэхүүн",
+    subtitle: "Эмэгтэй загвар",
+    discount: "25% хүртэл хөнгөлөлт",
     image: "/assets/images/s_1.webp",
     bgColor: "bg-blue-600",
     textColor: "text-white",
   },
   {
     id: 1,
-    title: "Latest Trending",
-    subtitle: "Fashion Wear",
-    discount: "Last call for upto 35%",
+    title: "Хамгийн сүүлийн үеийн",
+    subtitle: "Загварын хувцас",
+    discount: "35% хүртэл хөнгөлөлт",
     image: "/assets/images/s_2.webp",
     bgColor: "bg-red-600",
     textColor: "text-white",
   },
   {
     id: 2,
-    title: "New Trending",
-    subtitle: "Kids Fashion",
-    discount: "Last call for upto 15%",
+    title: "Шинэ трэнд",
+    subtitle: "Хүүхдийн загвар",
+    discount: "15% хүртэл хөнгөлөлт",
     image: "/assets/images/s_3.webp",
     bgColor: "bg-purple-600",
     textColor: "text-white",
   },
   {
     id: 3,
-    title: "Latest Trending",
-    subtitle: "Electronics Items",
-    discount: "Last call for upto 45%",
+    title: "Хамгийн сүүлийн үеийн",
+    subtitle: "Электроник бараа",
+    discount: "45% хүртэл хөнгөлөлт",
     image: "/assets/images/s_4.webp",
     bgColor: "bg-yellow-500",
     textColor: "text-gray-900",
   },
   {
     id: 4,
-    title: "Super Deals",
-    subtitle: "Home Furniture",
-    discount: "Last call for upto 24%",
+    title: "Супер хямдрал",
+    subtitle: "Гэрийн тавилга",
+    discount: "24% хүртэл хөнгөлөлт",
     image: "/assets/images/s_5.webp",
     bgColor: "bg-green-600",
     textColor: "text-white",
@@ -101,7 +101,7 @@ export default function Slider() {
                       href="/shop"
                       className="inline-block bg-gray-900 text-white px-8 py-3 rounded hover:bg-gray-800 transition"
                     >
-                      Shop Now
+                      Худалдан авах
                     </a>
                   </div>
                 </div>

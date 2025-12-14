@@ -55,7 +55,7 @@ export default function Padding() {
         // Шинэ бүтээгдэхүүнүүдийг эхэнд харуулах (reverse)
         setProducts([...featured].reverse());
       } catch (error) {
-        console.error("Error loading featured products:", error);
+        console.error("Онцлох бүтээгдэхүүн ачаалахад алдаа гарлаа:", error);
       } finally {
         setLoading(false);
       }
@@ -82,7 +82,7 @@ export default function Padding() {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <p className="text-gray-600 font-medium">Loading featured products...</p>
+              <p className="text-gray-600 font-medium">Онцлох бүтээгдэхүүн ачааллаж байна...</p>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function Padding() {
     <section className="py-8 md:py-12 lg:py-16" aria-label="Онцгой бүтээгдэхүүнүүд">
       <div className="container mx-auto px-2 sm:px-4">
         <div className="text-center pb-6 md:pb-8">
-          <h3 className="text-2xl md:text-3xl font-bold mb-2">Featured Products</h3>
+          <h3 className="text-2xl md:text-3xl font-bold mb-2">Онцлох бүтээгдэхүүн</h3>
           <p className="text-sm md:text-base text-gray-600 capitalize">Онцгой бүтээгдэхүүнүүд</p>
         </div>
 

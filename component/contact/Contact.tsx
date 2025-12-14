@@ -36,19 +36,19 @@ export const Contact = () => {
       if (response.ok) {
         setSubmitStatus({
           type: "success",
-          message: "Thank you! Your message has been sent successfully.",
+          message: "Баярлалаа! Таны мессеж амжилттай илгээгдлээ.",
         });
         setFormData({ name: "", email: "", phone: "", message: "" });
       } else {
         setSubmitStatus({
           type: "error",
-          message: "Failed to send message. Please try again.",
+          message: "Мессеж илгээхэд алдаа гарлаа. Дахин оролдоно уу.",
         });
       }
     } catch {
         setSubmitStatus({
           type: "error",
-          message: "An error occurred. Please try again later.",
+          message: "Алдаа гарлаа. Дараа дахин оролдоно уу.",
         });
       }
 
@@ -71,7 +71,7 @@ export const Contact = () => {
         {/* Хэсгийн гарчиг */}
         <div className="flex items-center gap-4 mb-8">
           <div className="flex-1 h-px bg-gray-300" />
-          <h3 className="text-2xl md:text-3xl font-bold text-center">Why Choose Us</h3>
+          <h3 className="text-2xl md:text-3xl font-bold text-center">Холбоо барих</h3>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
 
@@ -80,12 +80,12 @@ export const Contact = () => {
           <div className="xl:col-span-8">
             <div className="p-6 md:p-8 border border-gray-200 rounded-lg shadow-sm">
               <form onSubmit={handleSubmit}>
-                <h4 className="text-xl md:text-2xl font-bold mb-4">Drop Us a Line</h4>
+                <h4 className="text-xl md:text-2xl font-bold mb-4">Бидэнтэй холбогдох</h4>
                 <div className="border-b border-gray-200 mb-6" />
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Enter Your Name
+                    Таны нэр
                   </label>
                   <input
                     type="text"
@@ -99,7 +99,7 @@ export const Contact = () => {
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Enter Email
+                    Имэйл хаяг
                   </label>
                   <input
                     type="email"
@@ -113,7 +113,7 @@ export const Contact = () => {
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
+                    Утасны дугаар
                   </label>
                   <input
                     type="tel"
@@ -127,7 +127,7 @@ export const Contact = () => {
 
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message
+                    Мессеж
                   </label>
                   <textarea
                     name="message"
@@ -156,7 +156,7 @@ export const Contact = () => {
                   disabled={isSubmitting}
                   className="bg-gray-900 text-white px-6 py-3 hover:bg-gray-800 transition-colors duration-300 font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? "Sending..." : "Send Message"}
+                  {isSubmitting ? "Илгээж байна..." : "Мессеж илгээх"}
                 </button>
               </form>
             </div>
@@ -166,27 +166,27 @@ export const Contact = () => {
           <div className="xl:col-span-4">
             <div className="p-6 border border-gray-200 rounded-lg shadow-sm">
               <div className="mb-6">
-                <h5 className="text-lg font-bold mb-2">Address</h5>
-                <p className="text-sm text-gray-600">Max Mall, Ulaanbaatar, Mongolia</p>
+                <h5 className="text-lg font-bold mb-2">Хаяг</h5>
+                <p className="text-sm text-gray-600">Макс Молл, Улаанбаатар, Монгол</p>
               </div>
               <hr className="my-4 border-gray-200" />
 
               <div className="mb-6">
-                <h5 className="text-lg font-bold mb-2">Phone</h5>
-                <p className="text-sm text-gray-600">Toll Free (123) 472-796</p>
-                <p className="text-sm text-gray-600">Mobile: +976-9910XXXX</p>
+                <h5 className="text-lg font-bold mb-2">Утас</h5>
+                <p className="text-sm text-gray-600">Үнэгүй (123) 472-796</p>
+                <p className="text-sm text-gray-600">Гар утас: +976-9910XXXX</p>
               </div>
               <hr className="my-4 border-gray-200" />
 
               <div className="mb-6">
-                <h5 className="text-lg font-bold mb-2">Email</h5>
+                <h5 className="text-lg font-bold mb-2">Имэйл</h5>
                 <p className="text-sm text-gray-600">info@maxmall.mn</p>
               </div>
               <hr className="my-4 border-gray-200" />
 
               <div>
-                <h5 className="text-lg font-bold mb-2">Working Days</h5>
-                <p className="text-sm text-gray-600">Mon - FRI / 9:30 AM - 6:30 PM</p>
+                <h5 className="text-lg font-bold mb-2">Ажлын өдрүүд</h5>
+                <p className="text-sm text-gray-600">Даваа - Баасан / 9:30 - 18:30</p>
               </div>
             </div>
           </div>

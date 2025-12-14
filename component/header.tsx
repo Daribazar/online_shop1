@@ -13,10 +13,10 @@ import { useAuth } from '@/lib/authContext';
 import { useCart } from '@/lib/cartContext';
 
 const mobileMenuItems = [
-  { label: "Home", href: "/" },
-  { label: "Products", href: "/products" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" }
+  { label: "Нүүр", href: "/" },
+  { label: "Бүтээгдэхүүн", href: "/products" },
+  { label: "Бидний тухай", href: "/about" },
+  { label: "Холбоо барих", href: "/contact" }
 ];
 
 export default function Header() {
@@ -63,19 +63,19 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden xl:flex items-center space-x-8 flex-1 ml-12">
             <Link href="/" className="hover:text-gray-300 transition">
-              Home
+              Нүүр
             </Link>
 
             <Link href="/products" className="hover:text-gray-300 transition">
-              Products
+              Бүтээгдэхүүн
             </Link>
 
             <Link href="/about" className="hover:text-gray-300 transition">
-              About
+              Бидний тухай
             </Link>
 
             <Link href="/contact" className="hover:text-gray-300 transition">
-              Contact
+              Холбоо барих
             </Link>
           </div>
 
@@ -113,10 +113,10 @@ export default function Header() {
               }`}
               title={
                 mounted ? (
-                  isAuthenticated ? 'Profile' : 
-                  isGuest ? 'Guest Profile' : 
-                  'Login / Sign Up'
-                ) : 'Profile'
+                  isAuthenticated ? 'Профайл' : 
+                  isGuest ? 'Зочны профайл' : 
+                  'Нэвтрэх / Бүртгүүлэх'
+                ) : 'Профайл'
               }
             >
               <User size={22} />

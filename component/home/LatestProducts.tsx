@@ -76,7 +76,7 @@ export default function LatestProducts() {
   };
 
   const tabs = [
-    { id: "all", label: "All Products" },
+    { id: "all", label: "Бүх бүтээгдэхүүн" },
     ...categories.map(cat => ({ id: cat._id, label: cat.name }))
   ];
 
@@ -95,8 +95,8 @@ export default function LatestProducts() {
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center pb-8">
-          <h3 className="text-3xl font-bold mb-2">Latest Products</h3>
-          <p className="text-gray-600 capitalize">The purpose of lorem ipsum</p>
+          <h3 className="text-3xl font-bold mb-2">Шинэ бүтээгдэхүүн</h3>
+          <p className="text-gray-600 capitalize">Хамгийн сүүлийн үеийн бүтээгдэхүүнүүд</p>
         </div>
 
         {/* Tabs */}
@@ -134,9 +134,9 @@ export default function LatestProducts() {
 
         {/* Products Grid */}
         {loading ? (
-          <div className="text-center py-8">Loading products...</div>
+          <div className="text-center py-8">Бүтээгдэхүүн ачааллаж байна...</div>
         ) : displayProducts.length === 0 ? (
-          <div className="text-center py-8">No products available</div>
+          <div className="text-center py-8">Бүтээгдэхүүн байхгүй байна</div>
         ) : (
           <AnimatePresence mode="wait">
             <motion.div
@@ -163,7 +163,7 @@ export default function LatestProducts() {
                   <Card className="overflow-hidden group relative p-0 gap-0 cursor-pointer hover:shadow-xl transition-shadow h-full flex flex-col">
                     {product.priceAfterDiscount && product.priceAfterDiscount > 0 && product.priceAfterDiscount < product.price && (
                       <Badge variant="destructive" className="absolute top-2 left-2 z-10">
-                        Sale
+                        Хямдрал
                       </Badge>
                     )}
                     

@@ -40,7 +40,7 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
         const data = await response.json();
         const allProducts = data.getAllProducts || [];
         
-        // Ижил category-тэй бүтээгдэхүүнүүдийг шүүх (одоогийн бүтээгдэхүүнээс бусад)
+        // Ижил ангилалтай бүтээгдэхүүнүүдийг шүүх (одоогийн бүтээгдэхүүнээс бусад)
         const filtered = allProducts.filter((product: Product) => {
           const productCategoryId = typeof product.category === 'string' 
             ? product.category 
@@ -53,7 +53,7 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
         const shuffled = filtered.sort(() => 0.5 - Math.random());
         setSimilarProducts(shuffled.slice(0, 10));
       } catch (error) {
-        console.error("Error loading similar products:", error);
+        console.error("Ижил төстэй бүтээгдэхүүн ачаалахад алдаа гарлаа:", error);
       } finally {
         setLoading(false);
       }
@@ -77,7 +77,7 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <p className="text-gray-600 font-medium">Loading similar products...</p>
+              <p className="text-gray-600 font-medium">Ижил төстэй бүтээгдэхүүн ачааллаж байна...</p>
             </div>
           </div>
         </div>
@@ -94,7 +94,7 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
         {/* Хэсгийн гарчиг */}
         <div className="flex items-center gap-4 pb-8">
           <div className="flex-1 h-px bg-gray-300" aria-hidden="true" />
-          <h3 className="text-3xl font-bold">Similar Products</h3>
+          <h3 className="text-3xl font-bold">Ижил төстэй бүтээгдэхүүн</h3>
           <div className="flex-1 h-px bg-gray-300" aria-hidden="true" />
         </div>
 
