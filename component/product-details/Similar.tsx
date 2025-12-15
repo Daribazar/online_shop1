@@ -125,11 +125,11 @@ export default function Similar({ categoryId, currentProductId }: SimilarProps) 
                   <div className="p-4 border-t">
                     <h5 className="font-bold mb-1 truncate">{product.title}</h5>
                     <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.description}</p>
-                    <div className="flex items-center gap-2 flex-wrap" aria-label={product.priceAfterDiscount ? `Хөнгөлөлттэй үнэ ${displayPrice} доллар, ${discount}% хөнгөлөлт` : `Үнэ ${displayPrice} доллар`}>
-                      <span className="text-lg font-bold">${displayPrice}</span>
+                    <div className="flex items-center gap-2 flex-wrap" aria-label={product.priceAfterDiscount ? `Хөнгөлөлттэй үнэ ${displayPrice} төгрөг, ${discount}% хөнгөлөлт` : `Үнэ ${displayPrice} төгрөг`}>
+                      <span className="text-lg font-bold">₮{displayPrice}</span>
                       {product.priceAfterDiscount && (
                         <>
-                          <span className="text-sm text-gray-400 line-through" aria-hidden="true">${product.price}</span>
+                          <span className="text-sm text-gray-400 line-through" aria-hidden="true">₮{product.price}</span>
                           <span className="text-sm font-bold text-red-600" aria-hidden="true">({discount}% off)</span>
                         </>
                       )}

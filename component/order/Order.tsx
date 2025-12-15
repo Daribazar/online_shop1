@@ -328,10 +328,10 @@ export const OrderPage = () => {
                           </p>
                         )}
                         <p className="text-sm text-gray-600">
-                          Тоо: {item.quantity} × ${price.toFixed(2)}
+                          Тоо: {item.quantity} × ₮{price.toFixed(2)}
                         </p>
                         <p className="font-bold text-sm text-blue-600">
-                          ${(item.quantity * price).toFixed(2)}
+                          ₮{(item.quantity * price).toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -344,7 +344,7 @@ export const OrderPage = () => {
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <div className="flex justify-between text-xl font-bold">
                 <span>Нийт төлөх дүн:</span>
-                <span className="text-blue-600">${orderResponse?.totalOrderPrice.toFixed(2)}</span>
+                <span className="text-blue-600">₮{orderResponse?.totalOrderPrice.toFixed(2)}</span>
               </div>
             </div>
 
@@ -574,10 +574,10 @@ export const OrderPage = () => {
                           </p>
                         )}
                         <p className="text-sm text-gray-600">
-                          Тоо: {item.quantity} × ${price.toFixed(2)}
+                          Тоо: {item.quantity} × ₮{price.toFixed(2)}
                         </p>
                         <p className="font-bold text-sm">
-                          ${(item.quantity * price).toFixed(2)}
+                          ₮{(item.quantity * price).toFixed(2)}
                         </p>
                       </div>
                       </div>
@@ -593,7 +593,7 @@ export const OrderPage = () => {
                 <div className="border-t pt-2 mt-2">
                   <div className="flex justify-between text-lg font-bold">
                     <span>Нийт дүн:</span>
-                    <span className="text-blue-600">${getTotalPrice().toFixed(2)}</span>
+                    <span className="text-blue-600">₮{getTotalPrice().toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -612,7 +612,7 @@ export const OrderPage = () => {
                 ) : (
                   <>
                     <CreditCard className="w-5 h-5" />
-                    <span>Захиалах - ${getTotalPrice().toFixed(2)}</span>
+                    <span>Захиалах - ₮{getTotalPrice().toFixed(2)}</span>
                   </>
                 )}
               </button>

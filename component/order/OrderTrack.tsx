@@ -151,7 +151,7 @@ export function OrderTrackPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Нийт дүн</p>
-                    <p className="font-bold text-lg text-blue-600">${order.totalOrderPrice.toFixed(2)}</p>
+                    <p className="font-bold text-lg text-blue-600">₮{order.totalOrderPrice.toFixed(2)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Захиалсан огноо</p>
@@ -258,10 +258,10 @@ export function OrderTrackPage() {
                           </p>
                         )}
                         <p className="text-sm text-gray-600">
-                          Тоо: {item.quantity} × ${item.price.toFixed(2)}
+                          Тоо: {item.quantity} × ₮{item.price.toFixed(2)}
                         </p>
                         <p className="font-bold text-blue-600">
-                          ${(item.quantity * item.price).toFixed(2)}
+                          ₮{(item.quantity * item.price).toFixed(2)}
                         </p>
                       </div>
                     </div>

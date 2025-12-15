@@ -123,11 +123,11 @@ export default function SearchSidebar({ isOpen, onClose }: SearchSidebarProps) {
                     <div className="flex items-center gap-2">
                       {product.priceAfterDiscount ? (
                         <>
-                          <span className="font-bold text-red-600">${product.priceAfterDiscount}</span>
-                          <span className="text-gray-400 line-through text-sm">${product.price}</span>
+                          <span className="font-bold text-red-600">₮{product.priceAfterDiscount}</span>
+                          <span className="text-gray-400 line-through text-sm">₮{product.price}</span>
                         </>
                       ) : (
-                        <span className="font-bold">${product.price}</span>
+                        <span className="font-bold">₮{product.price}</span>
                       )}
                     </div>
                   </div>

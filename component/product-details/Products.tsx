@@ -179,16 +179,16 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
               {product.priceAfterDiscount && product.priceAfterDiscount < product.price ? (
                 <>
                   <span className="text-3xl font-bold">
-                    ${product.priceAfterDiscount}
+                    ₮{product.priceAfterDiscount}
                   </span>
-                  <span className="text-xl text-gray-400 line-through">${product.price}</span>
+                  <span className="text-xl text-gray-400 line-through">₮{product.price}</span>
                   <Badge variant="destructive" className="text-lg px-3 py-1">
                     {discount}% OFF
                   </Badge>
                 </>
               ) : (
                 <span className="text-3xl font-bold">
-                  ${product.price}
+                  ₮{product.price}
                 </span>
               )}
             </div>

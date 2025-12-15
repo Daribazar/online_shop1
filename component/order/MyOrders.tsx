@@ -104,7 +104,7 @@ export function MyOrdersPage() {
                       <div>
                         <p className="text-xs text-gray-500">Нийт дүн</p>
                         <p className="font-semibold text-sm text-blue-600">
-                          ${order.total.toFixed(2)}
+                          ₮{order.total.toFixed(2)}
                         </p>
                       </div>
                     </div>

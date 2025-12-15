@@ -77,11 +77,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         <div className="flex items-center gap-2 mb-2">
                           {item.priceAfterDiscount ? (
                             <>
-                              <strong className="text-red-600">${item.priceAfterDiscount.toFixed(2)}</strong>
-                              <span className="text-gray-400 line-through text-sm">${item.price.toFixed(2)}</span>
+                              <strong className="text-red-600">₮{item.priceAfterDiscount.toFixed(2)}</strong>
+                              <span className="text-gray-400 line-through text-sm">₮{item.price.toFixed(2)}</span>
                             </>
                           ) : (
-                            <strong>${item.price.toFixed(2)}</strong>
+                            <strong>₮{item.price.toFixed(2)}</strong>
                           )}
                         </div>
                         {/* Quantity Controls */}
@@ -103,7 +103,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                           </button>
                         </div>
                         <p className="text-sm text-gray-600 mt-1">
-                          Нийт: <strong>${(itemPrice * item.quantity).toFixed(2)}</strong>
+                          Нийт: <strong>₮{(itemPrice * item.quantity).toFixed(2)}</strong>
                         </p>
                       </div>
                       <button
@@ -130,7 +130,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             <div className="flex justify-between items-center mb-4 px-2">
               <span className="text-lg font-semibold">Нийт дүн:</span>
               <span className="text-2xl font-bold text-blue-600">
-                ${totalPrice.toFixed(2)}
+                ₮{totalPrice.toFixed(2)}
               </span>
             </div>
             <div className="space-y-2">

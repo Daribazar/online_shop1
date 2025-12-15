@@ -1298,7 +1298,7 @@ function ProductForm({ token }: { token: string }) {
                             )}
                             <h3 className="font-bold text-lg mb-2">{product.title}</h3>
                             <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
-                            <p className="text-lg font-bold text-blue-600 mb-2">${product.price}</p>
+                            <p className="text-lg font-bold text-blue-600 mb-2">₮{product.price}</p>
                             
                             {/* Brand харуулах */}
                             {product.brand && (
@@ -1421,7 +1421,7 @@ function ProductForm({ token }: { token: string }) {
                             )}
                             <h3 className="font-bold text-lg mb-2">{product.title}</h3>
                             <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
-                            <p className="text-lg font-bold text-blue-600 mb-2">${product.price}</p>
+                            <p className="text-lg font-bold text-blue-600 mb-2">₮{product.price}</p>
                             <p className="text-xs text-gray-500 mb-3">ID: {product._id}</p>
                             <div className="flex gap-2">
                               <button
