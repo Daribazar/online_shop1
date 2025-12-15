@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "online shop",
+  title: "abercrombie",
 };
 
 export default function RootLayout({
