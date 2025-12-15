@@ -143,7 +143,7 @@ export default function Slider() {
         onClick={prevSlide}
       >
         <ChevronLeft size={24} />
-        <span className="sr-only">Previous</span>
+        <span className="sr-only">Өмнөх</span>
       </button>
 
       {/* Next Button */}
@@ -153,7 +153,7 @@ export default function Slider() {
         onClick={nextSlide}
       >
         <ChevronRight size={24} />
-        <span className="sr-only">Next</span>
+        <span className="sr-only">Дараах</span>
       </button>
     </section>
   );

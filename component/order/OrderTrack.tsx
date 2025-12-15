@@ -221,7 +221,7 @@ export function OrderTrackPage() {
                 {order.guestInfo && (
                   <>
                     <Separator className="my-3" />
-                    <p><strong>Email:</strong> {order.guestInfo.email}</p>
+                    <p><strong>Имэйл:</strong> {order.guestInfo.email}</p>
                   </>
                 )}
                 {order.additionalNotes && (

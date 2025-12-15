@@ -100,7 +100,7 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
     return (
       <section className="py-8">
         <div className="container mx-auto px-4">
-          <div className="text-center py-20">Loading product...</div>
+          <div className="text-center py-20">Ачааллаж байна...</div>
         </div>
       </section>
     );
@@ -110,7 +110,7 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
     return (
       <section className="py-8">
         <div className="container mx-auto px-4">
-          <div className="text-center py-20">Product not found</div>
+          <div className="text-center py-20">Бүтээгдэхүүн олдсонгүй</div>
         </div>
       </section>
     );
@@ -196,14 +196,14 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
             {/* Нийт тоо ширхэг (sizes байхгүй бол) */}
             {!product.sizes && product.quantity !== undefined && (
               <p className="text-gray-600 mb-4">
-                {product.quantity > 0 ? `In Stock: ${product.quantity} items` : 'Out of Stock'}
+                {product.quantity > 0 ? `Нөөцөд: ${product.quantity} ширхэг` : 'Дууссан'}
               </p>
             )}
 
             {/* Size Chart */}
             {product.sizes && product.sizes.length > 0 && (
               <div className="mt-6">
-                <h6 className="font-bold mb-3">Select Size</h6>
+                <h6 className="font-bold mb-3">Хэмжээ сонгох</h6>
                 <div className="flex gap-2 flex-wrap">
                   {product.sizes.map((sizeInfo, index) => (
                     <button
@@ -217,7 +217,7 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
                           ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed"
                           : "bg-white hover:bg-gray-100 border-gray-300"
                       }`}
-                      title={sizeInfo.description || `${sizeInfo.quantity} available`}
+                      title={sizeInfo.description || `${sizeInfo.quantity} боломжтой`}
                     >
                       <div className="text-center">
                         <div className="font-bold text-lg">{sizeInfo.size}</div>
@@ -233,7 +233,7 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
                 {selectedSize && selectedSize.description && (
                   <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      <span className="font-semibold">Size {selectedSize.size}:</span> {selectedSize.description}
+                      <span className="font-semibold">Хэмжээ {selectedSize.size}:</span> {selectedSize.description}
                     </p>
                   </div>
                 )}
@@ -242,9 +242,9 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
                 {selectedSize && (
                   <div className="mt-3">
                     <p className="text-gray-600">
-                      <span className="font-semibold">Available:</span>{' '}
+                      <span className="font-semibold">Боломжтой:</span>{' '}
                       <span className={selectedSize.quantity > 0 ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
-                        {selectedSize.quantity > 0 ? `${selectedSize.quantity} items in stock` : 'Out of stock'}
+                        {selectedSize.quantity > 0 ? `${selectedSize.quantity} ширхэг нөөцөд` : 'Дууссан'}
                       </span>
                     </p>
                   </div>
@@ -403,12 +403,12 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
 
             {/* Product Details */}
             <div>
-              <h6 className="font-bold mb-3">Product Details</h6>
+              <h6 className="font-bold mb-3">Дэлгэрэнгүй мэдээлэл</h6>
               <div className="space-y-2 text-gray-600">
                 <p>{product.descripton}</p>
                 {product.category && (
                   <p className="flex gap-2">
-                    <span className="font-semibold">Category:</span>
+                    <span className="font-semibold">Ангилал:</span>
                     <Badge variant="secondary">
                       {typeof product.category === 'string' ? product.category : product.category.name}
                     </Badge>
@@ -416,7 +416,7 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
                 )}
                 {product.brand && (
                   <p className="flex gap-2">
-                    <span className="font-semibold">Brand:</span>
+                    <span className="font-semibold">Брэнд:</span>
                     <Badge variant="secondary">
                       {typeof product.brand === 'string' ? product.brand : product.brand.name}
                     </Badge>

@@ -111,7 +111,7 @@ export function MyOrdersPage() {
                     <div className="flex items-center gap-2">
                       <Package className="w-4 h-4 text-gray-500" />
                       <div>
-                        <p className="text-xs text-gray-500">Email</p>
+                        <p className="text-xs text-gray-500">Имэйл</p>
                         <p className="font-semibold text-sm truncate">
                           {order.email}
                         </p>

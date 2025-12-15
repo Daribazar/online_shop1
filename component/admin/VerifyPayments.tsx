@@ -336,7 +336,7 @@ export function VerifyPaymentsPage() {
                         {order.guestInfo ? (
                           <>
                             <p className="text-sm"><strong>Нэр:</strong> {order.guestInfo.name}</p>
-                            <p className="text-sm"><strong>Email:</strong> {order.guestInfo.email}</p>
+                            <p className="text-sm"><strong>Имэйл:</strong> {order.guestInfo.email}</p>
                             <p className="text-sm"><strong>Утас:</strong> {order.guestInfo.phone}</p>
                           </>
                         ) : (

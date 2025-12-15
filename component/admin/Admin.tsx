@@ -197,7 +197,7 @@ function LoginForm({ onLogin }: { onLogin: (token: string) => void }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+            <label className="block text-sm font-medium mb-2">Имэйл</label>
             <input
               type="email"
               value={email}
@@ -348,7 +348,7 @@ function CategoryForm({ token }: { token: string }) {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-6">Category оруулах</h2>
+        <h2 className="text-2xl font-bold mb-6">Ангилал оруулах</h2>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -436,7 +436,7 @@ function CategoryForm({ token }: { token: string }) {
             </div>
           </div>
         ) : categories.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">Category байхгүй байна</div>
+          <div className="text-center py-8 text-gray-500">Ангилал байхгүй байна</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {categories.map((cat) => (
@@ -899,7 +899,7 @@ function ProductForm({ token }: { token: string }) {
 
           {/* Size-ын хэсэг */}
           <div className="border-t pt-6 space-y-4">
-            <h3 className="text-lg font-semibold">Size мэдээлэл</h3>
+            <h3 className="text-lg font-semibold">Хэмжээний мэдээлэл</h3>
             
             {/* Size-ын горим сонгох */}
             <div className="flex items-center gap-4">
@@ -936,7 +936,7 @@ function ProductForm({ token }: { token: string }) {
               {sizes.map((sizeInfo, index) => (
                 <div key={index} className="border rounded-lg p-4 bg-gray-50 space-y-3">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="font-semibold text-blue-600">Size #{index + 1}</span>
+                    <span className="font-semibold text-blue-600">Хэмжээ #{index + 1}</span>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1012,7 +1012,7 @@ function ProductForm({ token }: { token: string }) {
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
                 required
               >
-                <option value="">Category сонгох</option>
+                <option value="">Ангилал сонгох</option>
                 {categories.map((cat) => (
                   <option key={cat._id} value={cat._id}>
                     {cat.name}
@@ -1304,7 +1304,7 @@ function ProductForm({ token }: { token: string }) {
                             {product.brand && (
                               <div className="mb-3 text-xs">
                                 <p>
-                                  <span className="font-semibold text-gray-700">Brand:</span>{' '}
+                                  <span className="font-semibold text-gray-700">Брэнд:</span>{' '}
                                   <span className="text-gray-900 font-medium">
                                     {typeof product.brand === 'string' 
                                       ? product.brand 
@@ -1317,7 +1317,7 @@ function ProductForm({ token }: { token: string }) {
                             {/* Size мэдээлэл харуулах */}
                             {product.sizes && product.sizes.length > 0 && (
                               <div className="mb-3 text-xs">
-                                <p className="font-semibold text-gray-700 mb-1">Sizes:</p>
+                                <p className="font-semibold text-gray-700 mb-1">Хэмжээнүүд:</p>
                                 <div className="space-y-1">
                                   {product.sizes.map((sizeInfo, idx) => (
                                     <div key={idx} className="bg-gray-50 p-2 rounded">
@@ -1387,7 +1387,7 @@ function ProductForm({ token }: { token: string }) {
                     className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-200"
                   >
                     <div className="text-left">
-                      <h3 className="text-lg font-bold text-gray-800">Category-гүй бүтээгдэхүүнүүд</h3>
+                      <h3 className="text-lg font-bold text-gray-800">Ангилалгүй бүтээгдэхүүнүүд</h3>
                       <p className="text-sm text-gray-600">
                         {uncategorizedProducts.length} бүтээгдэхүүн
                       </p>

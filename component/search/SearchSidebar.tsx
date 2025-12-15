@@ -64,7 +64,7 @@ export default function SearchSidebar({ isOpen, onClose }: SearchSidebarProps) {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="right" className="w-full sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>Search Products</SheetTitle>
+          <SheetTitle>Бүтээгдэхүүн хайх</SheetTitle>
         </SheetHeader>
 
         {/* Search Input */}
@@ -93,7 +93,7 @@ export default function SearchSidebar({ isOpen, onClose }: SearchSidebarProps) {
         {/* Search Results */}
         <div className="mt-6 overflow-y-auto h-[calc(100vh-220px)] pb-4">
           {loading ? (
-            <div className="text-center py-8 text-gray-500">Loading...</div>
+            <div className="text-center py-8 text-gray-500">Ачааллаж байна...</div>
           ) : !searchQuery ? (
             <div className="text-center py-8 text-gray-500">
               Бүтээгдэхүүн хайхын тулд бичнэ үү

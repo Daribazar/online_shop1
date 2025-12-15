@@ -231,7 +231,7 @@ export const OrderPage = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading order details...</p>
+          <p className="text-gray-600">Захиалгын мэдээлэл ачааллаж байна...</p>
         </div>
       </div>
     );
@@ -409,8 +409,8 @@ export const OrderPage = () => {
       <div className="container mx-auto px-4">
         {/* Гарчиг */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Checkout</h1>
-          <p className="text-gray-600">Complete your order information</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Төлбөр төлөх</h1>
+          <p className="text-gray-600">Захиалгын мэдээллээ бөглөнө үү</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -545,7 +545,7 @@ export const OrderPage = () => {
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
               <div className="flex items-center gap-3 mb-4">
                 <ShoppingCart className="w-6 h-6 text-gray-700" />
-                <h2 className="text-xl font-bold">Order Summary</h2>
+                <h2 className="text-xl font-bold">Захиалгын хураангуй</h2>
               </div>
               <div className="border-b border-gray-200 mb-4" />
 
