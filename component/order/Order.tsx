@@ -63,6 +63,7 @@ export const OrderPage = () => {
   const { cart: localCart, clearCart } = useCart();
 
   // State
+  const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
@@ -82,8 +83,9 @@ export const OrderPage = () => {
   // Алдааны мессеж
   const [error, setError] = useState<string>("");
 
-  // Хуудас дээш scroll хийх
+  // Client-side mount шалгах
   useEffect(() => {
+    setMounted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -225,22 +227,37 @@ export const OrderPage = () => {
     return imgCover || "/assets/images/featured-products/01.webp";
   };
 
+  // Hydration алдаа засах - client-side mount хүлээх
+  if (!mounted) {
+    return (
+      <section className="py-8 bg-gray-50 min-h-screen">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-20">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // Loading
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-gray-600">Захиалгын мэдээлэл ачааллаж байна...</p>
+      <section className="py-8 bg-gray-50 min-h-screen">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-20">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <p className="text-gray-600">Захиалгын мэдээлэл ачааллаж байна...</p>
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
   // Захиалга амжилттай - Банкны мэдээлэл харуулах
   if (orderSuccess && bankDetails) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <section className="py-8 bg-gray-50 min-h-screen">
         <div className="container mx-auto px-4 max-w-2xl">
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="text-center mb-6">
@@ -381,14 +398,14 @@ export const OrderPage = () => {
             </p>
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
   // Сагс хоосон бол
   if (localCart.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <section className="py-8 bg-gray-50 min-h-screen">
         <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
           <ShoppingCart className="w-20 h-20 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Таны сагс хоосон байна</h2>
@@ -400,7 +417,7 @@ export const OrderPage = () => {
             Бүтээгдэхүүн үзэх
           </button>
         </div>
-      </div>
+      </section>
     );
   }
 
