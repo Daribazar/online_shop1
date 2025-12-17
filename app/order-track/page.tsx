@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { OrderTrackPage } from "@/component/order/OrderTrack";
 
 export default function OrderTrack() {
-  return <OrderTrackPage />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OrderTrackPage />
+    </Suspense>
+  );
 }
