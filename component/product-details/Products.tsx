@@ -37,7 +37,7 @@ type SizeInfo = {
 type Product = {
   _id: string;
   title: string;
-  descripton: string;
+  description: string;
   price: number;
   priceAfterDiscount?: number;
   quantity?: number;
@@ -170,7 +170,7 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
           {/* Product Info */}
           <div className="xl:col-span-5">
             <h4 className="text-2xl font-bold mb-2">{product.title}</h4>
-            <p className="text-gray-600 mb-4">{product.descripton}</p>
+            <p className="text-gray-600 mb-4">{product.description}</p>
 
             <hr className="my-4" />
 
@@ -405,7 +405,7 @@ export default function Products({ onCategoryLoad }: ProductsProps) {
             <div>
               <h6 className="font-bold mb-3">Дэлгэрэнгүй мэдээлэл</h6>
               <div className="space-y-2 text-gray-600">
-                <p>{product.descripton}</p>
+                <p>{product.description}</p>
                 {product.category && (
                   <p className="flex gap-2">
                     <span className="font-semibold">Ангилал:</span>
