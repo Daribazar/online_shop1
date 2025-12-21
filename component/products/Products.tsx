@@ -253,8 +253,8 @@ export const Products = () => {
                     <option value="new">Шинэ бүтээгдэхүүн</option>
                     <option value="popularity">Алдартай</option>
                     <option value="discount">Хямдралтай</option>
-                    <option value="price-high">Үнэ: Өндрөөс нам</option>
-                    <option value="price-low">Үнэ: Намаас өндөр</option>
+                    <option value="price-high">Үнэ: Ихээс бага</option>
+                    <option value="price-low">Үнэ: Багаас их</option>
                     <option value="rating">Үнэлгээ</option>
                   </select>
                 </div>
