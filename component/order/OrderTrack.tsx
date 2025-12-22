@@ -144,22 +144,23 @@ export function OrderTrackPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Transaction ID</p>
-                    <p className="font-mono font-bold">{order.transactionId}</p>
+                {/* 4 багана - Responsive */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600 mb-1">Transaction ID</p>
+                    <p className="font-mono font-bold text-sm break-all">{order.transactionId}</p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Нийт дүн</p>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600 mb-1">Нийт дүн</p>
                     <p className="font-bold text-lg text-blue-600">₮{order.totalOrderPrice.toFixed(2)}</p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Захиалсан огноо</p>
-                    <p className="font-semibold">{new Date(order.createdAt).toLocaleDateString('mn-MN')}</p>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600 mb-1">Захиалсан огноо</p>
+                    <p className="font-semibold text-sm">{new Date(order.createdAt).toLocaleDateString('mn-MN')}</p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Хүргэлтийн төлөв</p>
-                    <Badge variant={order.isDelivered ? "default" : "secondary"}>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600 mb-1">Хүргэлтийн төлөв</p>
+                    <Badge variant={order.isDelivered ? "default" : "secondary"} className="mt-1">
                       {order.isDelivered ? "Хүргэгдсэн" : "Хүлээгдэж байна"}
                     </Badge>
                   </div>
