@@ -153,13 +153,13 @@ export const OrderPage = () => {
         selectedSize: item.selectedSize || null // Сонгосон size (байвал)
       }));
 
-      // Нийт үнэ тооцоолох
+      // Нийт үнэ тооцоолох (зөвхөн бүтээгдэхүүний үнэ, хүргэлтийн төлбөргүй)
       const totalOrderPrice = localCart.reduce((sum, item) => {
         const price = item.priceAfterDiscount || item.price;
         return sum + (price * item.quantity);
       }, 0);
 
-      // API дуудах
+      // API дуудах (backend өөрөө хүргэлтийн төлбөр нэмнэ)
       const response = await fetch(`${API_URL}/orders/bank-transfer`, {
         method: 'POST',
         headers: {
@@ -214,12 +214,20 @@ export const OrderPage = () => {
     }
   };
 
-  // Нийт үнэ
-  const getTotalPrice = () => {
+  // Хүргэлтийн төлбөр
+  const DELIVERY_FEE = 6000;
+
+  // Нийт үнэ (бүтээгдэхүүний үнэ)
+  const getSubtotal = () => {
     return localCart.reduce((sum, item) => {
       const price = item.priceAfterDiscount || item.price;
       return sum + (price * item.quantity);
     }, 0);
+  };
+
+  // Нийт төлөх дүн (бүтээгдэхүүн + хүргэлт)
+  const getTotalPrice = () => {
+    return getSubtotal() + DELIVERY_FEE;
   };
 
   // Зургийн эх сурвалж
@@ -266,6 +274,16 @@ export const OrderPage = () => {
               <p className="text-gray-600">Та доорх дансруу мөнгө шилжүүлнэ үү</p>
             </div>
 
+            {/* Төлбөрийн заавар */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <h4 className="font-bold text-yellow-900 mb-2">📝 Төлбөрийн заавар:</h4>
+              <ol className="list-decimal list-inside space-y-1 text-sm text-yellow-800">
+                <li>Доорх дансны дугаар руу мөнгө шилжүүлнэ</li>
+                <li>Гүйлгээний утганд <strong>{bankDetails.transactionId}</strong> гэж заавал бичнэ</li>
+                <li>Гүйлгээний утга-аа хадгалаад авна (захиалга шалгахад хэрэгтэй)</li>
+              </ol>
+            </div>
+
             {/* Банкны мэдээлэл */}
             <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 mb-6">
               <div className="flex items-center gap-3 mb-4">
@@ -283,7 +301,10 @@ export const OrderPage = () => {
                   <div className="flex items-center gap-2">
                     <span className="font-bold font-mono">{bankDetails.accountNumber}</span>
                     <button
-                      onClick={() => navigator.clipboard.writeText(bankDetails.accountNumber)}
+                      onClick={() => {
+                        navigator.clipboard.writeText(bankDetails.accountNumber);
+                        alert('Хуулагдлаа!');
+                      }}
                       className="p-1 hover:bg-blue-200 rounded"
                       title="Хуулах"
                     >
@@ -296,22 +317,27 @@ export const OrderPage = () => {
                   <span className="font-bold">{bankDetails.accountName}</span>
                 </div>
                 <div className="border-t-2 border-blue-300 pt-3 mt-3">
-                  <div className="flex justify-between items-center">
+
+                 <p className="text-xs text-red-600 mt-2 font-semibold">
+                    ⚠️ Заавал гүйлгээний утганд доорх кодыг бичнэ үү!
+                  </p>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                     <span className="text-gray-700 font-medium">Гүйлгээний дугаар:</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-lg text-blue-600 font-mono">{bankDetails.transactionId}</span>
+                      <span className="font-bold text-lg text-blue-600 font-mono break-all">{bankDetails.transactionId}</span>
                       <button
-                        onClick={() => navigator.clipboard.writeText(bankDetails.transactionId)}
-                        className="p-1 hover:bg-blue-200 rounded"
+                        onClick={() => {
+                          navigator.clipboard.writeText(bankDetails.transactionId);
+                          alert('Хуулагдлаа!');
+                        }}
+                        className="p-1 hover:bg-blue-200 rounded shrink-0"
                         title="Хуулах"
                       >
                         <Copy size={16} />
                       </button>
                     </div>
                   </div>
-                  <p className="text-xs text-red-600 mt-2 font-semibold">
-                    ⚠️ Заавал гүйлгээний дугаараа гүйлгээний утганд бичнэ үү!
-                  </p>
+                 
                 </div>
               </div>
             </div>
@@ -359,21 +385,31 @@ export const OrderPage = () => {
 
             {/* Захиалгын дүн */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <div className="flex justify-between text-xl font-bold">
-                <span>Нийт төлөх дүн:</span>
-                <span className="text-blue-600">₮{orderResponse?.totalOrderPrice.toFixed(2)}</span>
+              <div className="space-y-2">
+                <div className="flex justify-between text-gray-700">
+                  <span>Бүтээгдэхүүний үнэ:</span>
+                  <span className="font-semibold">₮{orderedItems.reduce((sum, item) => {
+                    const price = item.priceAfterDiscount || item.price;
+                    return sum + (price * item.quantity);
+                  }, 0).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-gray-700">
+                  <div className="flex items-center gap-2">
+                    <span>Хүргэлтийн төлбөр:</span>
+                    <span className="text-xs text-gray-500">(48цагын дотор хүргэгдэнэ)</span>
+                  </div>
+                  <span className="font-semibold">₮{DELIVERY_FEE.toLocaleString()}</span>
+                </div>
+                <div className="border-t pt-2 mt-2">
+                  <div className="flex justify-between text-xl font-bold">
+                    <span>Нийт төлөх дүн:</span>
+                    <span className="text-blue-600">₮{(orderedItems.reduce((sum, item) => {
+                      const price = item.priceAfterDiscount || item.price;
+                      return sum + (price * item.quantity);
+                    }, 0) + DELIVERY_FEE).toFixed(2)}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            {/* Заавар */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-              <h4 className="font-bold text-yellow-900 mb-2">📝 Төлбөрийн заавар:</h4>
-              <ol className="list-decimal list-inside space-y-1 text-sm text-yellow-800">
-                <li>Дээрх дансны дугаар руу мөнгө шилжүүлнэ</li>
-                <li>Гүйлгээний утганд <strong>{bankDetails.transactionId}</strong> гэж заавал бичнэ</li>
-                <li>Төлбөр баталгаажих хүртэл 1-2 цаг хүлээнэ</li>
-                <li>Transaction ID-ээ хадгалаад авна (захиалга шалгахад хэрэгтэй)</li>
-              </ol>
             </div>
 
             {/* Товчнууд */}
@@ -607,9 +643,24 @@ export const OrderPage = () => {
 
               {/* Үнийн дүн */}
               <div className="space-y-2 mb-6 pt-4 border-t">
+                {/* Бүтээгдэхүүний нийт үнэ */}
+                <div className="flex justify-between text-gray-700">
+                  <span>Бүтээгдэхүүний үнэ:</span>
+                  <span className="font-semibold">₮{getSubtotal().toFixed(2)}</span>
+                </div>
+                
+                {/* Хүргэлтийн төлбөр */}
+                <div className="flex justify-between text-gray-700">
+                  <div className="flex items-center gap-2">
+                    <span>Хүргэлтийн төлбөр:</span>
+                    <span className="text-xs text-gray-500">(48 цагийн дотох хүргэгдэнэ)</span>
+                  </div>
+                  <span className="font-semibold">₮{DELIVERY_FEE.toLocaleString()}</span>
+                </div>
+                
                 <div className="border-t pt-2 mt-2">
                   <div className="flex justify-between text-lg font-bold">
-                    <span>Нийт дүн:</span>
+                    <span>Нийт төлөх дүн:</span>
                     <span className="text-blue-600">₮{getTotalPrice().toFixed(2)}</span>
                   </div>
                 </div>

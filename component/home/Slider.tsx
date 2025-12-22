@@ -24,33 +24,6 @@ const slides = [
     bgColor: "bg-red-600",
     textColor: "text-white",
   },
-  {
-    id: 2,
-    title: "Шинэ трэнд",
-    subtitle: "Хүүхдийн загвар",
-    discount: "15% хүртэл хөнгөлөлт",
-    image: "/assets/images/s_3.webp",
-    bgColor: "bg-purple-600",
-    textColor: "text-white",
-  },
-  {
-    id: 3,
-    title: "Хамгийн сүүлийн үеийн",
-    subtitle: "Электроник бараа",
-    discount: "45% хүртэл хөнгөлөлт",
-    image: "/assets/images/s_4.webp",
-    bgColor: "bg-yellow-500",
-    textColor: "text-gray-900",
-  },
-  {
-    id: 4,
-    title: "Супер хямдрал",
-    subtitle: "Гэрийн тавилга",
-    discount: "24% хүртэл хөнгөлөлт",
-    image: "/assets/images/s_5.webp",
-    bgColor: "bg-green-600",
-    textColor: "text-white",
-  },
 ];
 
 // Нүүр хуудасны slider - Автомат болон гараар солих боломжтой
@@ -60,7 +33,7 @@ export default function Slider() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, 4000); // 4 секунд тутамд солигдоно
     return () => clearInterval(timer);
   }, []);
 
@@ -77,13 +50,13 @@ export default function Slider() {
   };
 
   return (
-    <section className="slider-section relative w-full overflow-hidden">
+    <section className="slider-section relative w-full overflow-hidden bg-gray-900">
       <div className="relative h-[400px] md:h-[500px] lg:h-[600px]">
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-700 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
             } ${slide.bgColor}`}
           >
             <div className="container mx-auto px-4 h-full">
@@ -112,6 +85,7 @@ export default function Slider() {
                     height={600}
                     alt={slide.subtitle}
                     className="object-contain max-h-full"
+                    priority={index === 0}
                   />
                 </div>
               </div>
@@ -127,8 +101,10 @@ export default function Slider() {
             key={slide.id}
             type="button"
             onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition ${
-              index === currentSlide ? "bg-white" : "bg-white/50"
+            className={`w-3 h-3 rounded-full transition border-2 ${
+              index === currentSlide 
+                ? "bg-white border-white scale-125" 
+                : "bg-transparent border-white/70 hover:border-white"
             }`}
             aria-current={index === currentSlide ? "true" : "false"}
             aria-label={`Slide ${index + 1}`}

@@ -184,7 +184,6 @@ export function OrderTrackPage() {
                       <Clock className="w-6 h-6 text-yellow-500" />
                       <div>
                         <p className="font-semibold text-yellow-900">Төлбөр хүлээгдэж байна</p>
-                        <p className="text-sm text-gray-600">Банкны шилжүүлгээ хийгээд байгаа эсэхийг шалгаж байна</p>
                       </div>
                     </>
                   )}

@@ -8,7 +8,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import CartSidebar from './cart/CartSidebar';
 import SearchSidebar from './search/SearchSidebar';
 import ProfileSidebar from './profile/ProfileSidebar';
-import { useScrollDirection } from '@/lib/useScrollDirection';
 import { useAuth } from '@/lib/authContext';
 import { useCart } from '@/lib/cartContext';
 
@@ -25,7 +24,6 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const scrollDirection = useScrollDirection();
   const { isAuthenticated, isGuest } = useAuth();
   const { totalItems } = useCart();
 
@@ -36,9 +34,7 @@ export default function Header() {
 
   return (
     <header 
-      className={`bg-white text-black shadow-lg fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${
-        scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'
-      }`}
+      className="bg-white text-black shadow-lg fixed top-0 left-0 right-0 z-50"
     >
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
