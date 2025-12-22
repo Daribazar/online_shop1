@@ -31,7 +31,7 @@ export default function Maps() {
       <div className="container mx-auto px-4">
         <div className="text-center pb-8">
           <h3 className="text-3xl font-bold mb-2">Манай байршил</h3>
-          <p className="text-gray-600">Макс Молл, Улаанбаатар хотод зочилно уу</p>
+          <p className="text-gray-600">Макс Молл, Улаанбаатар хот</p>
         </div>
         <div className="rounded-lg overflow-hidden shadow-lg">
           <div className="relative w-full h-96">
