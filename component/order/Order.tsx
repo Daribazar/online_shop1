@@ -653,7 +653,7 @@ export const OrderPage = () => {
                 <div className="flex justify-between text-gray-700">
                   <div className="flex items-center gap-2">
                     <span>Хүргэлтийн төлбөр:</span>
-                    <span className="text-xs text-gray-500">(48 цагийн дотох хүргэгдэнэ)</span>
+                    <span className="text-xs text-gray-500">(48 цагийн дотор хүргэгдэнэ)</span>
                   </div>
                   <span className="font-semibold">₮{DELIVERY_FEE.toLocaleString()}</span>
                 </div>
