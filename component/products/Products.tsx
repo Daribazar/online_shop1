@@ -286,15 +286,17 @@ export const Products = () => {
                               <CardFooter className="flex flex-col items-start gap-2 p-3">
                                 <h5 className="font-bold text-sm line-clamp-1">{product.title}</h5>
                                 <p className="text-xs text-gray-600 line-clamp-2">{product.descripton}</p>
-                                <div className="flex items-center gap-2 flex-wrap">
+                                <div className="w-full">
                                   {hasDiscount ? (
-                                    <>
-                                      <span className="font-bold text-base">₮{product.priceAfterDiscount}</span>
+                                    <div className="flex flex-col gap-1">
                                       <span className="text-gray-400 line-through text-sm">₮{product.price}</span>
-                                      <Badge variant="destructive" className="text-xs">
-                                        {discount}% OFF
-                                      </Badge>
-                                    </>
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-bold text-base">₮{product.priceAfterDiscount}</span>
+                                        <Badge variant="destructive" className="text-xs">
+                                          {discount}% OFF
+                                        </Badge>
+                                      </div>
+                                    </div>
                                   ) : (
                                     <span className="font-bold text-base">₮{product.price}</span>
                                   )}

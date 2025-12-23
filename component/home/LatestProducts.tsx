@@ -191,10 +191,10 @@ export default function LatestProducts() {
                           ))}
                         </div>
                         {product.priceAfterDiscount && product.priceAfterDiscount > 0 && product.priceAfterDiscount < product.price ? (
-                          <p className="text-lg font-bold">
-                            <span className="line-through text-gray-400 mr-2">₮{product.price.toLocaleString()}</span>
-                            <span className="text-red-600">₮{product.priceAfterDiscount.toLocaleString()}</span>
-                          </p>
+                          <div className="flex flex-col items-center gap-1">
+                            <span className="line-through text-gray-400 text-sm">₮{product.price.toLocaleString()}</span>
+                            <span className="text-red-600 text-lg font-bold">₮{product.priceAfterDiscount.toLocaleString()}</span>
+                          </div>
                         ) : (
                           <p className="text-lg font-bold">₮{product.price.toLocaleString()}</p>
                         )}

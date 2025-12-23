@@ -21,11 +21,11 @@ const companyLinks = [
 ];
 
 const socialLinks = [
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Youtube, href: "#", label: "YouTube" },
-  { icon: Instagram, href: "#", label: "Instagram" },
+  { icon: Facebook, 
+    href: "https://www.facebook.com/profile.php?id=100063981427617", 
+    label: "Facebook" },
+
+  { icon: Instagram, href: "https://www.instagram.com/abercrombiefitchmongolia/", label: "Instagram" },
 ];
 
 export default function Footer() {
@@ -85,6 +85,8 @@ export default function Footer() {
                 <Link
                   key={social.label}
                   href={social.href}
+                  target="_blank"           // Шинэ цонхонд нээх тохиргоо
+                  rel="noopener noreferrer" // Аюулгүй байдлын үүднээс заавал байх ёстой
                   className="w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-700 transition"
                   aria-label={social.label}
                 >
@@ -105,30 +107,7 @@ export default function Footer() {
 
         <div className="my-8" />
 
-        {/* Download App */}
-        <div className="text-center">
-          <h5 className="font-bold mb-4 text-lg">Апп татах</h5>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="#" className="bg-linear-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">▶</span>
-                <div className="text-left">
-                  <div className="text-xs">ТАТАХ</div>
-                  <div className="font-bold">Google Play</div>
-                </div>
-              </div>
-            </Link>
-            <Link href="#" className="bg-linear-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🍎</span>
-                <div className="text-left">
-                  <div className="text-xs">ТАТАХ</div>
-                  <div className="font-bold">App Store</div>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </div>
+
       </div>
     </section>
   );

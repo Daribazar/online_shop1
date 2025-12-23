@@ -506,14 +506,14 @@ export const OrderPage = () => {
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="flex items-center gap-3 mb-4">
                 <MapPin className="w-6 h-6 text-gray-700" />
-                <h2 className="text-xl font-bold">Shipping Address</h2>
+                <h2 className="text-xl font-bold">Хүргэлтийн хаяг</h2>
               </div>
               <div className="border-b border-gray-200 mb-6" />
 
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email *
+                    Имэйл хаяг
                   </label>
                   <input
                     type="email"
@@ -527,7 +527,7 @@ export const OrderPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Street Address *
+                    Хотхон (хорооллын) нэр эсвэл гудамны хаяг
                   </label>
                   <input
                     type="text"
@@ -542,7 +542,7 @@ export const OrderPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    City *
+                    Хот эсвэл аймгийн төвийн нэр
                   </label>
                   <input
                     type="text"
@@ -557,7 +557,7 @@ export const OrderPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number *
+                    Утасны дугаар
                   </label>
                   <input
                     type="tel"
@@ -577,7 +577,7 @@ export const OrderPage = () => {
                   <textarea
                     value={additionalNotes}
                     onChange={(e) => setAdditionalNotes(e.target.value)}
-                    placeholder="Хүргэлтийн нэмэлт тэмдэглэл (сонголттой)"
+                    placeholder="Хүргэлт очих дэлгэрэнгүй хаяг (Жишээ нь: 1-р байр 1-р орц 1-р тоот)"
                     className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                     rows={3}
                   />
