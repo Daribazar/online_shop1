@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { API_URL } from "@/lib/api";
 
 // Холбоо барих хуудас - Форм болон холбоо барих мэдээлэл
 export const Contact = () => {
@@ -24,8 +25,30 @@ export const Contact = () => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
+    // Имэйл validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setSubmitStatus({
+        type: "error",
+        message: "Имэйл хаяг буруу байна. @ тэмдэгт орсон байх ёстой.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Утасны дугаар validation (8 орон)
+    const phoneRegex = /^\d{8}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      setSubmitStatus({
+        type: "error",
+        message: "Утасны дугаар 8 оронтой байна.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch(`${API_URL}/contact/send`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,16 +56,18 @@ export const Contact = () => {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         setSubmitStatus({
           type: "success",
-          message: "Баярлалаа! Таны мессеж амжилттай илгээгдлээ.",
+          message: data.data || "Баярлалаа! Таны мессеж амжилттай илгээгдлээ.",
         });
         setFormData({ name: "", email: "", phone: "", message: "" });
       } else {
         setSubmitStatus({
           type: "error",
-          message: "Мессеж илгээхэд алдаа гарлаа. Дахин оролдоно уу.",
+          message: data.message || "Мессеж илгээхэд алдаа гарлаа. Дахин оролдоно уу.",
         });
       }
     } catch {
@@ -99,30 +124,36 @@ export const Contact = () => {
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Имэйл хаяг
+                    Имэйл хаяг <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    placeholder="example@gmail.com"
                     className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">@ тэмдэгт орсон байх ёстой</p>
                 </div>
 
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Утасны дугаар
+                    Утасны дугаар <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    placeholder="99101234"
+                    maxLength={8}
+                    pattern="\d{8}"
                     className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">утасны дугаар 8 оронтой байна</p>
                 </div>
 
                 <div className="mb-6">
