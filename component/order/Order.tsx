@@ -59,7 +59,7 @@ type OrderResponse = {
 export const OrderPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, token } = useAuth();
   const { cart: localCart, clearCart } = useCart();
 
   // State
@@ -160,11 +160,18 @@ export const OrderPage = () => {
       }, 0);
 
       // API дуудах (backend өөрөө хүргэлтийн төлбөр нэмнэ)
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Нэвтэрсэн бол token нэмэх
+      if (isAuthenticated && token) {
+        headers['token'] = token;
+      }
+      
       const response = await fetch(`${API_URL}/orders/bank-transfer`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           cartItems,
           totalOrderPrice,
