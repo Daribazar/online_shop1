@@ -71,7 +71,7 @@ export default function Slider() {
                   <p className="text-xl italic font-bold">{slide.discount}</p>
                   <div>
                     <a
-                      href="/shop"
+                      href="/products"
                       className="inline-block bg-gray-900 text-white px-8 py-3 rounded hover:bg-gray-800 transition"
                     >
                       Худалдан авах
