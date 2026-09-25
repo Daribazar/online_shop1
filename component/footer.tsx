@@ -35,9 +35,6 @@ export default function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* About Us */}
           <div>
-            <div className="mb-3">
-              <span className="text-2xl font-bold">ShopLogo</span>
-            </div>
             <h5 className="mb-3 font-bold text-lg">Бидний тухай</h5>
             <p className="mb-2 text-gray-600">
               Бид таны хэрэгцээнд нийцсэн өндөр чанартай бүтээгдэхүүн, 

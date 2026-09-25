@@ -3,7 +3,7 @@ import Image from 'next/image';
 // Бидний тухай хуудасны өгөгдөл
 const aboutData = {
   story: {
-    title: "Our Story",
+    title: "Бидний тухай",
     image: "https://images.pexels.com/photos/7679877/pexels-photo-7679877.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     paragraphs: [
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
@@ -73,7 +73,7 @@ export default function About() {
         {/* Яагаад биднийг сонгох вэ хэсэг */}
         <div className="py-16 flex items-center gap-4">
           <div className="flex-1 h-px bg-gray-300" />
-          <h3 className="text-2xl font-bold">Why Choose Us</h3>
+          <h3 className="text-2xl font-bold">Яагаад биднийг сонгох вэ?</h3>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
 
