@@ -20,6 +20,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "abercrombie",
+  icons: {
+    icon: { url: "/assets/images/logo.webp", type: "image/webp" },
+    shortcut: "/assets/images/logo.webp",
+  },
 };
 
 export default function RootLayout({
