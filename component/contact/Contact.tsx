@@ -204,8 +204,7 @@ export const Contact = () => {
 
               <div className="mb-6">
                 <h5 className="text-lg font-bold mb-2">Утас</h5>
-                <p className="text-sm text-gray-600">Үнэгүй (123) 472-796</p>
-                <p className="text-sm text-gray-600">Гар утас: +976-9910XXXX</p>
+                <p className="text-sm text-gray-600">Утас: +976-9910XXXX</p>
               </div>
               <hr className="my-4 border-gray-200" />
 
@@ -217,7 +216,7 @@ export const Contact = () => {
 
               <div>
                 <h5 className="text-lg font-bold mb-2">Ажлын өдрүүд</h5>
-                <p className="text-sm text-gray-600">Даваа - Баасан / 9:30 - 18:30</p>
+                <p className="text-sm text-gray-600">Даваа - Ням / 10:00 - 21:00</p>
               </div>
             </div>
           </div>

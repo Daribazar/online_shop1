@@ -2,13 +2,9 @@ import Link from "next/link";
 import { Facebook, Twitter, Linkedin, Youtube, Instagram } from "lucide-react";
 
 const exploreLinks = [
-  { label: "Загвар", href: "/fashion" },
+  { label: "Эрэгтэй", href: "/fashion" },
   { label: "Эмэгтэй", href: "/women" },
-  { label: "Тавилга", href: "/furniture" },
-  { label: "Гутал", href: "/shoes" },
-  { label: "Дээд хувцас", href: "/topwear" },
   { label: "Брэндүүд", href: "/brands" },
-  { label: "Хүүхдийн", href: "/kids" },
 ];
 
 const companyLinks = [
@@ -96,8 +92,8 @@ export default function Footer() {
               <p className="text-gray-600">support@example.com</p>
             </div>
             <div>
-              <h5 className="font-bold">Үнэгүй утас</h5>
-              <p className="text-gray-600">1800- 8xx 2xx</p>
+              <h5 className="font-bold">Утас</h5>
+              <p className="text-gray-600">+976 8xx 2xx</p>
             </div>
           </div>
         </div>
