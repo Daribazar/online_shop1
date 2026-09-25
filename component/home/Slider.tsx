@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -8,20 +8,16 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const slides = [
   {
     id: 0,
-    title: "Шинэ бүтээгдэхүүн",
-    subtitle: "Эмэгтэй загвар",
-    discount: "25% хүртэл хөнгөлөлт",
+    subtitle: "Эмэгтэй загварын хувцас",
     image: "/assets/images/s_1.webp",
-    bgColor: "bg-blue-600",
+    bgColor: "bg-[#BFA98E]",
     textColor: "text-white",
   },
   {
     id: 1,
-    title: "Хамгийн сүүлийн үеийн",
-    subtitle: "Загварын хувцас",
-    discount: "35% хүртэл хөнгөлөлт",
+    subtitle: "Эрэгтэй загварын хувцас",
     image: "/assets/images/s_2.webp",
-    bgColor: "bg-red-600",
+    bgColor: "bg-[#041B3D]",
     textColor: "text-white",
   },
 ];
@@ -64,11 +60,8 @@ export default function Slider() {
                 <div
                   className={`hidden lg:flex flex-col justify-center space-y-4 ${slide.textColor}`}
                 >
-                  <h3 className="text-2xl font-bold">
-                    {slide.title}
-                  </h3>
                   <h1 className="text-5xl font-bold">{slide.subtitle}</h1>
-                  <p className="text-xl italic font-bold">{slide.discount}</p>
+
                   <div>
                     <a
                       href="/products"
